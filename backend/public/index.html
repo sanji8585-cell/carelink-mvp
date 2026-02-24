@@ -1038,10 +1038,10 @@ body {
   border-radius: var(--radius-sm);
 }
 
-/* Weekly report card - spans 2 columns */
-.dash-card.report {
-  grid-column: span 2;
-}
+/* Cards that span multiple columns */
+.dash-card.span2 { grid-column: span 2; }
+.dash-card.span-full { grid-column: 1 / -1; }
+.dash-card.report { grid-column: span 2; }
 .report-content {
   font-size: 14px;
   color: var(--gray-600);
@@ -1098,6 +1098,8 @@ body {
 @media (max-width: 600px) {
   .dashboard-grid { grid-template-columns: 1fr !important; }
   .dashboard-grid > .dash-card { grid-column: 1 !important; }
+  .dash-card.span2 { grid-column: 1 !important; }
+  .dash-card.span-full { grid-column: 1 !important; }
   .dash-card.report { grid-column: 1 !important; }
   .report-metrics { grid-template-columns: 1fr; }
   .profile-info .profile-meta { justify-content: center; }
@@ -2956,7 +2958,7 @@ body {
         '</div>' +
 
         // Steps card - spans 2 columns on larger screens
-        '<div class="dash-card" style="grid-column: span 2">' +
+        '<div class="dash-card span2">' +
           '<div class="dash-card-header">' +
             '<span class="dash-card-title">\uD83D\uDEB6 주간 걸음 수</span>' +
             '<span class="dash-card-badge badge-info">7일</span>' +
@@ -2982,7 +2984,7 @@ body {
         '</div>' +
 
         // Conversations card - spans 2 columns
-        '<div class="dash-card" style="grid-column: span 2">' +
+        '<div class="dash-card span2">' +
           '<div class="dash-card-header">' +
             '<span class="dash-card-title">\uD83D\uDCAC 최근 대화 요약</span>' +
             '<span class="dash-card-badge badge-info">최근 3일</span>' +
@@ -2991,7 +2993,7 @@ body {
         '</div>' +
 
         // Weekly report card - spans full width
-        '<div class="dash-card report" style="grid-column: 1 / -1">' +
+        '<div class="dash-card report span-full">' +
           '<div class="dash-card-header">' +
             '<span class="dash-card-title">\uD83D\uDCCB 주간 리포트</span>' +
             '<span class="dash-card-badge ' + (report.overallStatus === 'GOOD' ? 'badge-good' : 'badge-warning') + '">' +
