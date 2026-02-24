@@ -579,6 +579,99 @@ body {
 .chat-send:hover { background: var(--primary-dark); transform: scale(1.05); }
 .chat-send:disabled { background: var(--gray-300); cursor: not-allowed; transform: none; }
 
+/* Mic button (STT) */
+.chat-mic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--gray-100);
+  color: var(--gray-600);
+  border: 1px solid var(--gray-200);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  flex-shrink: 0;
+  font-size: 18px;
+}
+.chat-mic:hover { background: var(--gray-200); transform: scale(1.05); }
+.chat-mic.recording {
+  background: #fee2e2;
+  color: #ef4444;
+  border-color: #ef4444;
+  animation: micPulse 1.2s ease-in-out infinite;
+}
+@keyframes micPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(239,68,68,0); }
+}
+
+/* TTS speaker button in AI bubbles */
+.tts-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: none;
+  border: 1px solid var(--gray-200);
+  border-radius: 12px;
+  padding: 3px 8px;
+  font-size: 11px;
+  color: var(--gray-500);
+  cursor: pointer;
+  margin-top: 4px;
+  transition: var(--transition);
+}
+.tts-btn:hover { background: var(--gray-50); color: var(--primary); border-color: var(--primary); }
+.tts-btn.speaking { color: var(--primary); border-color: var(--primary); background: rgba(34,197,94,0.08); }
+
+/* Auto TTS toggle */
+.auto-tts-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--gray-50);
+  border-bottom: 1px solid var(--gray-200);
+  font-size: 12px;
+  color: var(--gray-500);
+}
+.auto-tts-bar label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+}
+.tts-toggle {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--gray-300);
+  border-radius: 10px;
+  outline: none;
+  cursor: pointer;
+  transition: var(--transition);
+  border: none;
+}
+.tts-toggle::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--white);
+  top: 2px;
+  left: 2px;
+  transition: var(--transition);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+}
+.tts-toggle:checked { background: var(--primary); }
+.tts-toggle:checked::after { left: 18px; }
+
 .chat-hint {
   text-align: center;
   margin-top: 20px;
@@ -1138,6 +1231,9 @@ body {
             <p>&#xC628;&#xB77C;&#xC778;</p>
           </div>
         </div>
+        <div class="auto-tts-bar">
+          <label><span>&#x1F50A; &#xC790;&#xB3D9; &#xC74C;&#xC131; &#xC77D;&#xAE30;</span><input type="checkbox" class="tts-toggle" id="auto-tts-toggle"></label>
+        </div>
         <div class="chat-messages" id="chat-messages">
           <div class="chat-bubble ai">
             &#xC548;&#xB155;&#xD558;&#xC138;&#xC694;! &#xC800;&#xB294; &#xCF00;&#xC5B4;&#xB9C1;&#xD06C; AI &#xB9D0;&#xBC97;&#xC774;&#xC5D0;&#xC694; &#x1F60A; &#xC624;&#xB298; &#xD558;&#xB8E8;&#xB294; &#xC5B4;&#xB5A0;&#xC168;&#xC5B4;&#xC694;?
@@ -1149,6 +1245,7 @@ body {
         </div>
         <div class="chat-input-bar">
           <input type="text" class="chat-input" id="chat-input" placeholder="&#xBA54;&#xC2DC;&#xC9C0;&#xB97C; &#xC785;&#xB825;&#xD558;&#xC138;&#xC694;..." maxlength="300">
+          <button class="chat-mic" id="chat-mic" aria-label="Voice input" title="&#xC74C;&#xC131;&#xC73C;&#xB85C; &#xB9D0;&#xD558;&#xAE30;">&#x1F3A4;</button>
           <button class="chat-send" id="chat-send" aria-label="Send">&#x27A4;</button>
         </div>
       </div>
@@ -1239,7 +1336,9 @@ body {
   var chatMessages = document.getElementById('chat-messages');
   var chatInput = document.getElementById('chat-input');
   var chatSend = document.getElementById('chat-send');
+  var chatMic = document.getElementById('chat-mic');
   var typingIndicator = document.getElementById('typing-indicator');
+  var autoTtsToggle = document.getElementById('auto-tts-toggle');
   var isSending = false;
 
   function getTimeStr() {
@@ -1251,10 +1350,91 @@ body {
     return ampm + ' ' + h + ':' + (m < 10 ? '0' : '') + m;
   }
 
-  function addBubble(text, type) {
+  // ===== TTS (Text-to-Speech) =====
+  var ttsSupported = 'speechSynthesis' in window;
+
+  function speakText(text, btn) {
+    if (!ttsSupported) return;
+    // Stop any current speech
+    window.speechSynthesis.cancel();
+    // Remove speaking class from all buttons
+    document.querySelectorAll('.tts-btn.speaking').forEach(function(b) {
+      b.classList.remove('speaking');
+      b.innerHTML = '&#x1F50A; &#xB4E3;&#xAE30;';
+    });
+
+    var utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'ko-KR';
+    utter.rate = 0.9;
+    utter.pitch = 1.0;
+
+    // Try to find a Korean voice
+    var voices = window.speechSynthesis.getVoices();
+    var koVoice = voices.find(function(v) { return v.lang.startsWith('ko'); });
+    if (koVoice) utter.voice = koVoice;
+
+    if (btn) {
+      btn.classList.add('speaking');
+      btn.innerHTML = '&#x23F9; &#xC815;&#xC9C0;';
+    }
+
+    utter.onend = function() {
+      if (btn) {
+        btn.classList.remove('speaking');
+        btn.innerHTML = '&#x1F50A; &#xB4E3;&#xAE30;';
+      }
+    };
+    utter.onerror = function() {
+      if (btn) {
+        btn.classList.remove('speaking');
+        btn.innerHTML = '&#x1F50A; &#xB4E3;&#xAE30;';
+      }
+    };
+
+    window.speechSynthesis.speak(utter);
+  }
+
+  function stopSpeaking() {
+    if (!ttsSupported) return;
+    window.speechSynthesis.cancel();
+    document.querySelectorAll('.tts-btn.speaking').forEach(function(b) {
+      b.classList.remove('speaking');
+      b.innerHTML = '&#x1F50A; &#xB4E3;&#xAE30;';
+    });
+  }
+
+  // Preload voices (some browsers load them asynchronously)
+  if (ttsSupported && speechSynthesis.onvoiceschanged !== undefined) {
+    speechSynthesis.onvoiceschanged = function() { speechSynthesis.getVoices(); };
+  }
+
+  function addBubble(text, type, rawText) {
     var bubble = document.createElement('div');
     bubble.className = 'chat-bubble ' + type;
-    bubble.innerHTML = text + '<span class="time">' + getTimeStr() + '</span>';
+    var html = text + '<span class="time">' + getTimeStr() + '</span>';
+
+    // Add TTS button for AI bubbles
+    if (type === 'ai' && ttsSupported) {
+      html += '<button class="tts-btn" data-tts-text="' + (rawText || text).replace(/"/g, '&quot;') + '">&#x1F50A; &#xB4E3;&#xAE30;</button>';
+    }
+
+    bubble.innerHTML = html;
+
+    // Attach TTS click handler
+    if (type === 'ai' && ttsSupported) {
+      var ttsBtn = bubble.querySelector('.tts-btn');
+      if (ttsBtn) {
+        ttsBtn.addEventListener('click', function() {
+          var speaking = this.classList.contains('speaking');
+          if (speaking) {
+            stopSpeaking();
+          } else {
+            speakText(this.getAttribute('data-tts-text'), this);
+          }
+        });
+      }
+    }
+
     chatMessages.insertBefore(bubble, typingIndicator);
     chatMessages.scrollTop = chatMessages.scrollHeight;
   }
@@ -1286,7 +1466,11 @@ body {
     .then(function(data) {
       hideTyping();
       var response = data.response || data.message || data.error || '응답을 받지 못했습니다.';
-      addBubble(escapeHtml(response), 'ai');
+      addBubble(escapeHtml(response), 'ai', response);
+      // Auto TTS: read aloud if toggle is on
+      if (autoTtsToggle && autoTtsToggle.checked && ttsSupported) {
+        setTimeout(function() { speakText(response); }, 200);
+      }
     })
     .catch(function() {
       hideTyping();
@@ -1315,6 +1499,85 @@ body {
       sendMessage(chatInput.value);
     }
   });
+
+  // ===== STT (Speech-to-Text) =====
+  var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var sttSupported = !!SpeechRecognition;
+  var recognition = null;
+  var isRecording = false;
+
+  if (sttSupported) {
+    recognition = new SpeechRecognition();
+    recognition.lang = 'ko-KR';
+    recognition.continuous = false;
+    recognition.interimResults = true;
+
+    recognition.onresult = function(event) {
+      var transcript = '';
+      var isFinal = false;
+      for (var i = event.resultIndex; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+        if (event.results[i].isFinal) isFinal = true;
+      }
+      chatInput.value = transcript;
+      if (isFinal) {
+        stopRecording();
+        if (transcript.trim()) {
+          sendMessage(transcript.trim());
+        }
+      }
+    };
+
+    recognition.onerror = function(event) {
+      console.log('STT error:', event.error);
+      stopRecording();
+      if (event.error === 'not-allowed') {
+        chatInput.placeholder = '마이크 권한을 허용해주세요';
+        setTimeout(function() { chatInput.placeholder = '메시지를 입력하세요...'; }, 3000);
+      }
+    };
+
+    recognition.onend = function() {
+      stopRecording();
+    };
+  } else {
+    // Hide mic button if STT not supported
+    if (chatMic) chatMic.style.display = 'none';
+  }
+
+  function startRecording() {
+    if (!sttSupported || !recognition) return;
+    try {
+      recognition.start();
+      isRecording = true;
+      chatMic.classList.add('recording');
+      chatMic.title = '음성 인식 중... (클릭하면 중지)';
+      chatInput.placeholder = '말씀하세요...';
+    } catch (e) {
+      console.log('STT start error:', e);
+    }
+  }
+
+  function stopRecording() {
+    if (!sttSupported || !recognition) return;
+    try { recognition.stop(); } catch(e) {}
+    isRecording = false;
+    if (chatMic) {
+      chatMic.classList.remove('recording');
+      chatMic.title = '음성으로 말하기';
+    }
+    chatInput.placeholder = '메시지를 입력하세요...';
+  }
+
+  if (chatMic) {
+    chatMic.addEventListener('click', function() {
+      if (isRecording) {
+        stopRecording();
+      } else {
+        startRecording();
+      }
+    });
+  }
 
   // Hint chips
   document.querySelectorAll('.chat-hint-chip').forEach(function(chip) {
