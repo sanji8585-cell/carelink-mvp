@@ -1924,55 +1924,13 @@ body {
     return ampm + ' ' + h + ':' + (m < 10 ? '0' : '') + m;
   }
 
-  // ===== TTS (Text-to-Speech) =====
-  var ttsSupported = 'speechSynthesis' in window;
-  var ttsResumeInterval = null;
-  var ttsWarmedUp = false;
-
-  // Chrome fix: warm up speechSynthesis on first user gesture
-  function warmUpTTS() {
-    if (ttsWarmedUp || !ttsSupported) return;
-    ttsWarmedUp = true;
-    var warmUp = new SpeechSynthesisUtterance('');
-    warmUp.volume = 0;
-    warmUp.lang = 'ko-KR';
-    window.speechSynthesis.speak(warmUp);
-  }
-  // Attach warm-up to first user click anywhere
-  document.addEventListener('click', function() { warmUpTTS(); }, { once: true });
+  // ===== TTS (Text-to-Speech) via OpenAI API =====
+  var ttsAudio = null; // Current playing Audio object
+  var ttsSupported = true; // OpenAI TTS is always available (server-side)
 
   function speakText(text, btn) {
-    if (!ttsSupported) return;
-    warmUpTTS();
-    // Stop any current speech
-    window.speechSynthesis.cancel();
-    if (ttsResumeInterval) { clearInterval(ttsResumeInterval); ttsResumeInterval = null; }
-    // Remove speaking class from all buttons
-    document.querySelectorAll('.tts-btn.speaking').forEach(function(b) {
-      b.classList.remove('speaking');
-      b.innerHTML = '&#x1F50A; &#xB4E3;&#xAE30;';
-    });
-
-    // Split long text into chunks for Chrome (cuts off after ~15s)
-    var chunks = [];
-    if (text.length > 80) {
-      var sentences = text.match(/[^.!?。\n]+[.!?。\n]?/g) || [text];
-      var current = '';
-      sentences.forEach(function(s) {
-        if ((current + s).length > 80 && current.length > 0) {
-          chunks.push(current.trim());
-          current = s;
-        } else {
-          current += s;
-        }
-      });
-      if (current.trim()) chunks.push(current.trim());
-    } else {
-      chunks = [text];
-    }
-
-    var voices = window.speechSynthesis.getVoices();
-    var koVoice = voices.find(function(v) { return v.lang.startsWith('ko'); });
+    // Stop any current speech first
+    stopSpeaking();
 
     if (btn) {
       btn.classList.add('speaking');
@@ -1980,53 +1938,72 @@ body {
     }
 
     function resetBtn() {
-      if (ttsResumeInterval) { clearInterval(ttsResumeInterval); ttsResumeInterval = null; }
       if (btn) {
         btn.classList.remove('speaking');
         btn.innerHTML = '&#x1F50A; &#xB4E3;&#xAE30;';
       }
     }
 
-    function speakChunk(idx) {
-      if (idx >= chunks.length) { resetBtn(); return; }
-      var utter = new SpeechSynthesisUtterance(chunks[idx]);
-      utter.lang = 'ko-KR';
-      utter.rate = 0.9;
-      utter.pitch = 1.0;
-      if (koVoice) utter.voice = koVoice;
-      utter.onend = function() { speakChunk(idx + 1); };
-      utter.onerror = function() { resetBtn(); };
-      window.speechSynthesis.speak(utter);
+    function resetAllBtns() {
+      document.querySelectorAll('.tts-btn.speaking').forEach(function(b) {
+        b.classList.remove('speaking');
+        b.innerHTML = '&#x1F50A; &#xB4E3;&#xAE30;';
+      });
     }
 
-    speakChunk(0);
-
-    // Chrome fix: periodically call resume() to prevent freezing
-    ttsResumeInterval = setInterval(function() {
-      if (!window.speechSynthesis.speaking) {
-        clearInterval(ttsResumeInterval);
-        ttsResumeInterval = null;
-        resetBtn();
-      } else {
-        window.speechSynthesis.pause();
-        window.speechSynthesis.resume();
+    // Call OpenAI TTS backend
+    fetch('/api/tts/speak', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: text, voice: 'nova' })
+    })
+    .then(function(res) {
+      if (!res.ok) throw new Error('TTS API error');
+      return res.blob();
+    })
+    .then(function(blob) {
+      var url = URL.createObjectURL(blob);
+      ttsAudio = new Audio(url);
+      ttsAudio.playbackRate = 1.0;
+      ttsAudio.onended = function() {
+        resetAllBtns();
+        URL.revokeObjectURL(url);
+        ttsAudio = null;
+      };
+      ttsAudio.onerror = function() {
+        resetAllBtns();
+        URL.revokeObjectURL(url);
+        ttsAudio = null;
+      };
+      ttsAudio.play();
+    })
+    .catch(function(err) {
+      console.error('TTS failed:', err);
+      resetBtn();
+      // Fallback to browser TTS if OpenAI fails
+      if ('speechSynthesis' in window) {
+        var utter = new SpeechSynthesisUtterance(text);
+        utter.lang = 'ko-KR';
+        utter.rate = 0.9;
+        window.speechSynthesis.speak(utter);
       }
-    }, 5000);
+    });
   }
 
   function stopSpeaking() {
-    if (!ttsSupported) return;
-    window.speechSynthesis.cancel();
-    if (ttsResumeInterval) { clearInterval(ttsResumeInterval); ttsResumeInterval = null; }
+    if (ttsAudio) {
+      ttsAudio.pause();
+      ttsAudio.currentTime = 0;
+      ttsAudio = null;
+    }
+    // Also stop fallback browser TTS if any
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
     document.querySelectorAll('.tts-btn.speaking').forEach(function(b) {
       b.classList.remove('speaking');
       b.innerHTML = '&#x1F50A; &#xB4E3;&#xAE30;';
     });
-  }
-
-  // Preload voices (some browsers load them asynchronously)
-  if (ttsSupported && speechSynthesis.onvoiceschanged !== undefined) {
-    speechSynthesis.onvoiceschanged = function() { speechSynthesis.getVoices(); };
   }
 
   function addBubble(text, type, rawText) {

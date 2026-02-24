@@ -16,6 +16,7 @@ import { reportRouter } from './routes/report';
 import { notificationRouter } from './routes/notification';
 import { dashboardRouter } from './routes/dashboard';
 import { demoRouter } from './routes/demo';
+import { ttsRouter } from './routes/tts';
 import path from 'path';
 
 dotenv.config();
@@ -33,6 +34,7 @@ app.use(helmet({
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       imgSrc: ["'self'", "data:", "https:"],
+      mediaSrc: ["'self'", "blob:"],
       connectSrc: ["'self'"],
     },
   },
@@ -68,6 +70,7 @@ app.use('/api/reports', reportRouter);
 app.use('/api/notifications', notificationRouter);
 app.use('/api/dashboard', dashboardRouter);
 app.use('/api/demo', demoRouter);
+app.use('/api/tts', ttsRouter);
 
 // Serve static demo page
 app.use(express.static(path.join(__dirname, '../public')));

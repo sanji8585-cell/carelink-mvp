@@ -18,6 +18,7 @@
     "cors": "^2.8.5",
     "cron": "^3.1.0",
     "dotenv": "^16.4.0",
+    "esbuild": "^0.24.0",
     "express": "^4.21.0",
     "express-rate-limit": "^7.4.0",
     "firebase-admin": "^12.6.0",
@@ -25,11 +26,11 @@
     "ioredis": "^5.4.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
+    "openai": "^6.24.0",
+    "prisma": "^5.20.0",
     "uuid": "^10.0.0",
     "winston": "^3.15.0",
-    "zod": "^3.23.0",
-    "esbuild": "^0.24.0",
-    "prisma": "^5.20.0"
+    "zod": "^3.23.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
