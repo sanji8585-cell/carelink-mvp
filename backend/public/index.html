@@ -1003,10 +1003,13 @@ body {
   .report-metrics { grid-template-columns: repeat(3, 1fr); }
 }
 @media (max-width: 600px) {
-  .dashboard-grid { grid-template-columns: 1fr; }
-  .dash-card.report { grid-column: 1; }
+  .dashboard-grid { grid-template-columns: 1fr !important; }
+  .dashboard-grid > .dash-card { grid-column: 1 !important; }
+  .dash-card.report { grid-column: 1 !important; }
   .report-metrics { grid-template-columns: 1fr; }
   .profile-info .profile-meta { justify-content: center; }
+  .steps-chart { min-height: 120px; }
+  .steps-bars { gap: 4px; }
 }
 
 /* ===== Footer ===== */
