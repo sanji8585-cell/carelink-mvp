@@ -1,0 +1,70 @@
+name: carelink
+description: CareLink - AI 노인돌봄 플랫폼
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+  # State management
+  provider: ^6.1.0
+  flutter_riverpod: ^2.5.0
+
+  # Networking
+  dio: ^5.7.0
+  
+  # Local storage
+  shared_preferences: ^2.3.0
+  flutter_secure_storage: ^9.2.0
+
+  # Sensors & Health
+  pedometer: ^4.0.2          # 만보기
+  sensors_plus: ^6.0.0       # 가속도계/자이로
+  geolocator: ^13.0.0        # GPS
+  
+  # Audio (AI 대화)
+  speech_to_text: ^7.0.0     # STT
+  flutter_tts: ^4.0.0        # TTS
+  
+  # Push Notifications
+  firebase_core: ^3.6.0
+  firebase_messaging: ^15.1.0
+  flutter_local_notifications: ^18.0.0
+
+  # UI
+  fl_chart: ^0.69.0          # 차트
+  shimmer: ^3.0.0             # 로딩 효과
+  cached_network_image: ^3.4.0
+  intl: ^0.19.0              # 날짜 포맷
+
+  # Utils
+  permission_handler: ^11.3.0
+  url_launcher: ^6.3.0
+  uuid: ^4.5.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  build_runner: ^2.4.0
+
+flutter:
+  uses-material-design: true
+  
+  assets:
+    - assets/images/
+    - assets/icons/
+
+  fonts:
+    - family: Pretendard
+      fonts:
+        - asset: assets/fonts/Pretendard-Regular.otf
+        - asset: assets/fonts/Pretendard-Bold.otf
+          weight: 700
+        - asset: assets/fonts/Pretendard-ExtraBold.otf
+          weight: 800

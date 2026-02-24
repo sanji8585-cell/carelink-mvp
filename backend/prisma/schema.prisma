@@ -1,0 +1,299 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ========== 사용자 ==========
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  passwordHash  String
+  name          String
+  phone         String?
+  role          UserRole  @default(FAMILY)
+  fcmToken      String?   // Firebase 푸시 토큰
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // 자녀(보호자)로서의 관계
+  seniorLinks   SeniorFamilyLink[] @relation("FamilyUser")
+
+  @@map("users")
+}
+
+model Senior {
+  id            String    @id @default(uuid())
+  name          String
+  birthDate     DateTime?
+  gender        Gender?
+  phone         String?
+  inviteCode    String    @unique @default(uuid()) // 자녀가 연결할 때 사용
+  profileNote   String?   // 건강 특이사항 메모
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // 관계
+  familyLinks       SeniorFamilyLink[]
+  conversations     Conversation[]
+  healthRecords     HealthRecord[]
+  medicationAlerts  MedicationAlert[]
+  sosEvents         SosEvent[]
+  weeklyReports     WeeklyReport[]
+  deviceData        DeviceData[]
+
+  @@map("seniors")
+}
+
+model SeniorFamilyLink {
+  id        String    @id @default(uuid())
+  seniorId  String
+  familyId  String
+  role      FamilyRole @default(CHILD) // 자녀, 배우자, 기타
+  isPrimary Boolean   @default(false)  // 주 보호자 여부
+  createdAt DateTime  @default(now())
+
+  senior    Senior    @relation(fields: [seniorId], references: [id])
+  family    User      @relation("FamilyUser", fields: [familyId], references: [id])
+
+  @@unique([seniorId, familyId])
+  @@map("senior_family_links")
+}
+
+// ========== AI 대화 ==========
+
+model Conversation {
+  id        String    @id @default(uuid())
+  seniorId  String
+  startedAt DateTime  @default(now())
+  endedAt   DateTime?
+  summary   String?   // AI가 생성한 대화 요약
+  mood      MoodScore? // AI가 분석한 감정 상태
+  concerns  String[]  // AI가 감지한 주의 사항
+
+  senior    Senior    @relation(fields: [seniorId], references: [id])
+  messages  Message[]
+
+  @@map("conversations")
+}
+
+model Message {
+  id             String   @id @default(uuid())
+  conversationId String
+  role           MessageRole
+  content        String
+  audioUrl       String?  // 음성 녹음 URL (선택)
+  createdAt      DateTime @default(now())
+
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+
+  @@map("messages")
+}
+
+// ========== 건강 데이터 ==========
+
+model HealthRecord {
+  id          String    @id @default(uuid())
+  seniorId    String
+  date        DateTime  @default(now())
+  type        HealthDataType
+  value       Float
+  unit        String?
+  metadata    Json?     // 추가 메타데이터
+  source      String    @default("app") // app, manual, device
+  createdAt   DateTime  @default(now())
+
+  senior      Senior    @relation(fields: [seniorId], references: [id])
+
+  @@index([seniorId, date])
+  @@index([seniorId, type, date])
+  @@map("health_records")
+}
+
+model DeviceData {
+  id          String    @id @default(uuid())
+  seniorId    String
+  date        DateTime  @default(now())
+  steps       Int       @default(0)
+  sleepHours  Float?
+  activeMinutes Int?
+  screenTime  Int?      // 분 단위
+  appUsageCount Int?    // 앱 열기 횟수
+  batteryLevel Int?
+  metadata    Json?
+
+  senior      Senior    @relation(fields: [seniorId], references: [id])
+
+  @@unique([seniorId, date])
+  @@map("device_data")
+}
+
+// ========== 약 복용 ==========
+
+model MedicationAlert {
+  id          String    @id @default(uuid())
+  seniorId    String
+  name        String    // 약 이름
+  dosage      String?   // 용량
+  scheduleTime String   // "08:00", "20:00" 등
+  days        String[]  // ["MON","TUE","WED","THU","FRI","SAT","SUN"]
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+
+  senior      Senior    @relation(fields: [seniorId], references: [id])
+  logs        MedicationLog[]
+
+  @@map("medication_alerts")
+}
+
+model MedicationLog {
+  id          String    @id @default(uuid())
+  alertId     String
+  takenAt     DateTime?
+  status      MedicationStatus @default(PENDING)
+  scheduledAt DateTime
+  createdAt   DateTime  @default(now())
+
+  alert       MedicationAlert @relation(fields: [alertId], references: [id])
+
+  @@map("medication_logs")
+}
+
+// ========== 긴급 SOS ==========
+
+model SosEvent {
+  id          String    @id @default(uuid())
+  seniorId    String
+  type        SosType   @default(MANUAL) // 수동 버튼, 낙상 감지
+  latitude    Float?
+  longitude   Float?
+  resolved    Boolean   @default(false)
+  resolvedAt  DateTime?
+  resolvedBy  String?
+  note        String?
+  createdAt   DateTime  @default(now())
+
+  senior      Senior    @relation(fields: [seniorId], references: [id])
+
+  @@map("sos_events")
+}
+
+// ========== 주간 리포트 ==========
+
+model WeeklyReport {
+  id          String    @id @default(uuid())
+  seniorId    String
+  weekStart   DateTime
+  weekEnd     DateTime
+  summary     String    // AI 생성 요약
+  avgSteps    Float?
+  avgSleep    Float?
+  moodTrend   String?   // "stable", "improving", "declining"
+  medicationRate Float? // 복약 이행률 (0~1)
+  concerns    String[]
+  recommendations String[]
+  cognitiveScore Float? // 인지 점수
+  overallStatus HealthStatus @default(NORMAL)
+  createdAt   DateTime  @default(now())
+
+  senior      Senior    @relation(fields: [seniorId], references: [id])
+
+  @@unique([seniorId, weekStart])
+  @@map("weekly_reports")
+}
+
+// ========== 알림 ==========
+
+model Notification {
+  id          String    @id @default(uuid())
+  userId      String    // 받는 사람 (자녀)
+  seniorId    String?
+  type        NotificationType
+  title       String
+  body        String
+  data        Json?
+  isRead      Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+
+  @@index([userId, isRead])
+  @@map("notifications")
+}
+
+// ========== ENUMS ==========
+
+enum UserRole {
+  FAMILY    // 자녀(보호자)
+  ADMIN     // 관리자
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum FamilyRole {
+  CHILD     // 자녀
+  SPOUSE    // 배우자
+  OTHER     // 기타
+}
+
+enum MessageRole {
+  USER      // 시니어
+  ASSISTANT // AI
+  SYSTEM
+}
+
+enum MoodScore {
+  VERY_GOOD
+  GOOD
+  NEUTRAL
+  BAD
+  VERY_BAD
+}
+
+enum HealthDataType {
+  STEPS
+  SLEEP_HOURS
+  HEART_RATE
+  BLOOD_PRESSURE_SYS
+  BLOOD_PRESSURE_DIA
+  WEIGHT
+  TEMPERATURE
+  COGNITIVE_SCORE
+  TOUCH_ACCURACY
+  APP_USAGE
+}
+
+enum MedicationStatus {
+  PENDING
+  TAKEN
+  MISSED
+  SKIPPED
+}
+
+enum SosType {
+  MANUAL    // 버튼 누름
+  FALL      // 낙상 감지
+  INACTIVITY // 장시간 미활동
+}
+
+enum HealthStatus {
+  NORMAL
+  CAUTION
+  WARNING
+  CRITICAL
+}
+
+enum NotificationType {
+  SOS
+  HEALTH_ALERT
+  MEDICATION_MISSED
+  WEEKLY_REPORT
+  CONVERSATION_SUMMARY
+  INACTIVITY
+  SYSTEM
+}

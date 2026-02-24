@@ -1,0 +1,33 @@
+databases:
+  - name: carelink-db
+    plan: free
+    databaseName: carelink
+    user: carelink
+
+services:
+  - type: web
+    name: carelink-api
+    plan: free
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: npx prisma migrate deploy && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: carelink-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: CORS_ORIGIN
+        value: "*"
+      - key: RATE_LIMIT_WINDOW_MS
+        value: "900000"
+      - key: RATE_LIMIT_MAX
+        value: "200"
