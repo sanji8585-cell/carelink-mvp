@@ -1273,6 +1273,14 @@ body {
   padding: 10px 4px;
   background: var(--gray-50);
   border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+}
+.senior-app-health-item:hover { background: var(--gray-100); }
+.senior-app-health-item.active {
+  background: var(--primary-light);
+  box-shadow: 0 0 0 2px var(--primary);
 }
 .senior-app-health-item .h-icon { font-size: 22px; margin-bottom: 4px; }
 .senior-app-health-item .h-value {
@@ -1284,6 +1292,79 @@ body {
   font-size: 11px;
   color: var(--gray-500);
   margin-top: 2px;
+}
+.senior-app-health-item .h-tap {
+  font-size: 9px;
+  color: var(--primary);
+  margin-top: 3px;
+  opacity: 0.7;
+}
+
+/* Weekly health graph */
+.sa-health-graph {
+  margin-top: 12px;
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  animation: bubbleIn 0.3s ease;
+}
+.sa-health-graph-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dark);
+  margin-bottom: 10px;
+  text-align: center;
+}
+.sa-graph-bars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 100px;
+  gap: 4px;
+  padding: 0 2px;
+}
+.sa-graph-bar-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  height: 100%;
+}
+.sa-graph-bar-track {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.sa-graph-bar {
+  width: 100%;
+  max-width: 28px;
+  border-radius: 4px 4px 0 0;
+  transition: height 0.5s ease;
+  min-height: 4px;
+}
+.sa-graph-bar.steps { background: var(--primary); }
+.sa-graph-bar.sleep { background: var(--info); }
+.sa-graph-bar.mood-good { background: var(--success); }
+.sa-graph-bar.mood-neutral { background: var(--warning); }
+.sa-graph-bar.mood-bad { background: var(--danger); }
+.sa-graph-val {
+  font-size: 9px;
+  color: var(--gray-500);
+  text-align: center;
+  white-space: nowrap;
+}
+.sa-graph-day {
+  font-size: 10px;
+  color: var(--gray-500);
+  font-weight: 500;
+}
+.sa-graph-day.today {
+  color: var(--primary);
+  font-weight: 700;
 }
 
 .senior-app-family-btn {
@@ -1481,7 +1562,7 @@ body {
           </div>
         </div>
         <div class="auto-tts-bar">
-          <label><span>&#x1F50A; &#xC790;&#xB3D9; &#xC74C;&#xC131; &#xC77D;&#xAE30;</span><input type="checkbox" class="tts-toggle" id="auto-tts-toggle"></label>
+          <label><span>&#x1F50A; &#xC790;&#xB3D9; &#xC74C;&#xC131; &#xC77D;&#xAE30;</span><input type="checkbox" class="tts-toggle" id="auto-tts-toggle" checked></label>
         </div>
         <div class="chat-messages" id="chat-messages">
           <div class="chat-bubble ai">
@@ -1626,51 +1707,98 @@ body {
 
   // ===== TTS (Text-to-Speech) =====
   var ttsSupported = 'speechSynthesis' in window;
+  var ttsResumeInterval = null;
+  var ttsWarmedUp = false;
+
+  // Chrome fix: warm up speechSynthesis on first user gesture
+  function warmUpTTS() {
+    if (ttsWarmedUp || !ttsSupported) return;
+    ttsWarmedUp = true;
+    var warmUp = new SpeechSynthesisUtterance('');
+    warmUp.volume = 0;
+    warmUp.lang = 'ko-KR';
+    window.speechSynthesis.speak(warmUp);
+  }
+  // Attach warm-up to first user click anywhere
+  document.addEventListener('click', function() { warmUpTTS(); }, { once: true });
 
   function speakText(text, btn) {
     if (!ttsSupported) return;
+    warmUpTTS();
     // Stop any current speech
     window.speechSynthesis.cancel();
+    if (ttsResumeInterval) { clearInterval(ttsResumeInterval); ttsResumeInterval = null; }
     // Remove speaking class from all buttons
     document.querySelectorAll('.tts-btn.speaking').forEach(function(b) {
       b.classList.remove('speaking');
       b.innerHTML = '&#x1F50A; &#xB4E3;&#xAE30;';
     });
 
-    var utter = new SpeechSynthesisUtterance(text);
-    utter.lang = 'ko-KR';
-    utter.rate = 0.9;
-    utter.pitch = 1.0;
+    // Split long text into chunks for Chrome (cuts off after ~15s)
+    var chunks = [];
+    if (text.length > 80) {
+      var sentences = text.match(/[^.!?。\n]+[.!?。\n]?/g) || [text];
+      var current = '';
+      sentences.forEach(function(s) {
+        if ((current + s).length > 80 && current.length > 0) {
+          chunks.push(current.trim());
+          current = s;
+        } else {
+          current += s;
+        }
+      });
+      if (current.trim()) chunks.push(current.trim());
+    } else {
+      chunks = [text];
+    }
 
-    // Try to find a Korean voice
     var voices = window.speechSynthesis.getVoices();
     var koVoice = voices.find(function(v) { return v.lang.startsWith('ko'); });
-    if (koVoice) utter.voice = koVoice;
 
     if (btn) {
       btn.classList.add('speaking');
       btn.innerHTML = '&#x23F9; &#xC815;&#xC9C0;';
     }
 
-    utter.onend = function() {
+    function resetBtn() {
+      if (ttsResumeInterval) { clearInterval(ttsResumeInterval); ttsResumeInterval = null; }
       if (btn) {
         btn.classList.remove('speaking');
         btn.innerHTML = '&#x1F50A; &#xB4E3;&#xAE30;';
       }
-    };
-    utter.onerror = function() {
-      if (btn) {
-        btn.classList.remove('speaking');
-        btn.innerHTML = '&#x1F50A; &#xB4E3;&#xAE30;';
-      }
-    };
+    }
 
-    window.speechSynthesis.speak(utter);
+    function speakChunk(idx) {
+      if (idx >= chunks.length) { resetBtn(); return; }
+      var utter = new SpeechSynthesisUtterance(chunks[idx]);
+      utter.lang = 'ko-KR';
+      utter.rate = 0.9;
+      utter.pitch = 1.0;
+      if (koVoice) utter.voice = koVoice;
+      utter.onend = function() { speakChunk(idx + 1); };
+      utter.onerror = function() { resetBtn(); };
+      window.speechSynthesis.speak(utter);
+    }
+
+    speakChunk(0);
+
+    // Chrome fix: periodically call resume() to prevent freezing
+    ttsResumeInterval = setInterval(function() {
+      if (!window.speechSynthesis.speaking) {
+        clearInterval(ttsResumeInterval);
+        ttsResumeInterval = null;
+        resetBtn();
+      } else {
+        window.speechSynthesis.pause();
+        window.speechSynthesis.resume();
+      }
+    }, 5000);
   }
 
   function stopSpeaking() {
     if (!ttsSupported) return;
     window.speechSynthesis.cancel();
+    if (ttsResumeInterval) { clearInterval(ttsResumeInterval); ttsResumeInterval = null; }
     document.querySelectorAll('.tts-btn.speaking').forEach(function(b) {
       b.classList.remove('speaking');
       b.innerHTML = '&#x1F50A; &#xB4E3;&#xAE30;';
@@ -1743,7 +1871,7 @@ body {
       addBubble(escapeHtml(response), 'ai', response);
       // Auto TTS: read aloud if toggle is on
       if (autoTtsToggle && autoTtsToggle.checked && ttsSupported) {
-        setTimeout(function() { speakText(response); }, 200);
+        speakText(response);
       }
     })
     .catch(function() {
@@ -1949,14 +2077,15 @@ body {
     });
     html += '</div>';
 
-    // Health stats
-    html += '<div class="senior-app-card">';
-    html += '<div class="senior-app-card-title">📊 오늘의 건강</div>';
+    // Health stats (clickable with weekly graph)
+    html += '<div class="senior-app-card" id="sa-health-card">';
+    html += '<div class="senior-app-card-title">📊 오늘의 건강 <span style="font-size:11px;color:var(--gray-400);font-weight:400;">탭하면 주간 그래프</span></div>';
     html += '<div class="senior-app-health-grid">';
-    html += '<div class="senior-app-health-item"><div class="h-icon">🚶</div><div class="h-value">' + steps.toLocaleString() + '</div><div class="h-label">걸음 수</div></div>';
-    html += '<div class="senior-app-health-item"><div class="h-icon">😴</div><div class="h-value">' + sleepHours + '시간</div><div class="h-label">수면</div></div>';
-    html += '<div class="senior-app-health-item"><div class="h-icon">' + moodInfo.emoji + '</div><div class="h-value">' + moodInfo.text + '</div><div class="h-label">기분</div></div>';
+    html += '<div class="senior-app-health-item" data-health="steps"><div class="h-icon">🚶</div><div class="h-value">' + steps.toLocaleString() + '</div><div class="h-label">걸음 수</div><div class="h-tap">▼ 주간</div></div>';
+    html += '<div class="senior-app-health-item" data-health="sleep"><div class="h-icon">😴</div><div class="h-value">' + sleepHours + '시간</div><div class="h-label">수면</div><div class="h-tap">▼ 주간</div></div>';
+    html += '<div class="senior-app-health-item" data-health="mood"><div class="h-icon">' + moodInfo.emoji + '</div><div class="h-value">' + moodInfo.text + '</div><div class="h-label">기분</div><div class="h-tap">▼ 주간</div></div>';
     html += '</div>';
+    html += '<div id="sa-health-graph-area"></div>';
     html += '</div>';
 
     // Family contacts
@@ -2013,6 +2142,110 @@ body {
       btn.addEventListener('click', function() {
         var name = this.getAttribute('data-family-name');
         showSeniorToast('📞 ' + name + '님에게 전화 연결 중...');
+      });
+    });
+
+    // Health graph - weekly data
+    var weeklyData = data.weekly && data.weekly.data ? data.weekly.data : [
+      { dayLabel: '월', steps: 2100, sleepHours: 7.0, sleep: 7.0, mood: 'GOOD' },
+      { dayLabel: '화', steps: 3500, sleepHours: 6.0, sleep: 6.0, mood: 'GOOD' },
+      { dayLabel: '수', steps: 4200, sleepHours: 6.5, sleep: 6.5, mood: 'NEUTRAL' },
+      { dayLabel: '목', steps: 1800, sleepHours: 7.5, sleep: 7.5, mood: 'BAD' },
+      { dayLabel: '금', steps: 3100, sleepHours: 5.5, sleep: 5.5, mood: 'GOOD' },
+      { dayLabel: '토', steps: 4600, sleepHours: 6.8, sleep: 6.8, mood: 'GOOD' },
+      { dayLabel: '일', steps: steps, sleepHours: sleepHours, sleep: sleepHours, mood: mood }
+    ];
+    var dayLabels = ['월','화','수','목','금','토','일'];
+    // Ensure dayLabel exists on each item
+    weeklyData.forEach(function(d, i) {
+      if (!d.dayLabel) {
+        var dt = new Date(d.date);
+        d.dayLabel = ['일','월','화','수','목','금','토'][dt.getDay()];
+      }
+      if (!d.sleepHours && d.sleep) d.sleepHours = d.sleep;
+      if (!d.mood) d.mood = 'GOOD';
+    });
+    var lastIdx = weeklyData.length - 1;
+
+    var graphArea = document.getElementById('sa-health-graph-area');
+    var activeHealthTab = null;
+
+    function renderHealthGraph(type) {
+      if (activeHealthTab === type) {
+        // Toggle off
+        graphArea.innerHTML = '';
+        activeHealthTab = null;
+        seniorAppBody.querySelectorAll('.senior-app-health-item').forEach(function(el) {
+          el.classList.remove('active');
+        });
+        return;
+      }
+      activeHealthTab = type;
+      seniorAppBody.querySelectorAll('.senior-app-health-item').forEach(function(el) {
+        el.classList.toggle('active', el.getAttribute('data-health') === type);
+      });
+
+      var titleMap = { steps: '🚶 주간 걸음 수', sleep: '😴 주간 수면 시간', mood: '😊 주간 기분' };
+      var gHtml = '<div class="sa-health-graph">';
+      gHtml += '<div class="sa-health-graph-title">' + titleMap[type] + '</div>';
+      gHtml += '<div class="sa-graph-bars">';
+
+      if (type === 'steps') {
+        var maxSteps = Math.max.apply(null, weeklyData.map(function(d) { return d.steps || 0; }));
+        if (maxSteps === 0) maxSteps = 1;
+        weeklyData.forEach(function(d, i) {
+          var pct = Math.round(((d.steps || 0) / maxSteps) * 100);
+          var isToday = i === lastIdx;
+          gHtml += '<div class="sa-graph-bar-wrap">';
+          gHtml += '<div class="sa-graph-val">' + ((d.steps || 0) / 1000).toFixed(1) + 'k</div>';
+          gHtml += '<div class="sa-graph-bar-track"><div class="sa-graph-bar steps" style="height:' + Math.max(pct, 5) + '%"></div></div>';
+          gHtml += '<div class="sa-graph-day' + (isToday ? ' today' : '') + '">' + d.dayLabel + '</div>';
+          gHtml += '</div>';
+        });
+      } else if (type === 'sleep') {
+        var maxSleep = Math.max.apply(null, weeklyData.map(function(d) { return d.sleepHours || d.sleep || 0; }));
+        if (maxSleep === 0) maxSleep = 1;
+        weeklyData.forEach(function(d, i) {
+          var hrs = d.sleepHours || d.sleep || 0;
+          var pct = Math.round((hrs / maxSleep) * 100);
+          var isToday = i === lastIdx;
+          gHtml += '<div class="sa-graph-bar-wrap">';
+          gHtml += '<div class="sa-graph-val">' + hrs.toFixed(1) + 'h</div>';
+          gHtml += '<div class="sa-graph-bar-track"><div class="sa-graph-bar sleep" style="height:' + Math.max(pct, 5) + '%"></div></div>';
+          gHtml += '<div class="sa-graph-day' + (isToday ? ' today' : '') + '">' + d.dayLabel + '</div>';
+          gHtml += '</div>';
+        });
+      } else if (type === 'mood') {
+        var moodScoreMap = { GOOD: 3, NEUTRAL: 2, BAD: 1 };
+        var moodEmojiMap = { GOOD: '😊', NEUTRAL: '😐', BAD: '😞' };
+        var moods = ['GOOD','GOOD','NEUTRAL','GOOD','BAD','GOOD', mood];
+        weeklyData.forEach(function(d, i) {
+          var m = d.mood || moods[i] || 'GOOD';
+          var score = moodScoreMap[m] || 2;
+          var pct = Math.round((score / 3) * 100);
+          var barClass = m === 'GOOD' ? 'mood-good' : m === 'BAD' ? 'mood-bad' : 'mood-neutral';
+          var isToday = i === lastIdx;
+          gHtml += '<div class="sa-graph-bar-wrap">';
+          gHtml += '<div class="sa-graph-val">' + (moodEmojiMap[m] || '😊') + '</div>';
+          gHtml += '<div class="sa-graph-bar-track"><div class="sa-graph-bar ' + barClass + '" style="height:' + Math.max(pct, 15) + '%"></div></div>';
+          gHtml += '<div class="sa-graph-day' + (isToday ? ' today' : '') + '">' + d.dayLabel + '</div>';
+          gHtml += '</div>';
+        });
+      }
+
+      gHtml += '</div></div>';
+      graphArea.innerHTML = gHtml;
+
+      // Smooth scroll to graph
+      setTimeout(function() {
+        graphArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    }
+
+    seniorAppBody.querySelectorAll('.senior-app-health-item').forEach(function(item) {
+      item.addEventListener('click', function() {
+        var type = this.getAttribute('data-health');
+        renderHealthGraph(type);
       });
     });
   }
