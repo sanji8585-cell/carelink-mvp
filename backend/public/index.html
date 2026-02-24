@@ -1,0 +1,1768 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CareLink AI - AI가 함께하는 따뜻한 노인돌봄</title>
+<meta name="description" content="어르신의 일상을 AI가 함께하며, 가족에게 안심을 전합니다. CareLink AI 투자자 데모.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ===== CSS Custom Properties ===== */
+:root {
+  --primary: #10B981;
+  --primary-dark: #059669;
+  --primary-light: #D1FAE5;
+  --primary-glow: rgba(16, 185, 129, 0.25);
+  --dark: #111827;
+  --dark-soft: #1F2937;
+  --dark-muted: #374151;
+  --gray-50: #F9FAFB;
+  --gray-100: #F3F4F6;
+  --gray-200: #E5E7EB;
+  --gray-300: #D1D5DB;
+  --gray-400: #9CA3AF;
+  --gray-500: #6B7280;
+  --gray-600: #4B5563;
+  --gray-700: #374151;
+  --white: #FFFFFF;
+  --danger: #EF4444;
+  --danger-light: #FEE2E2;
+  --warning: #F59E0B;
+  --warning-light: #FEF3C7;
+  --info: #3B82F6;
+  --info-light: #DBEAFE;
+  --success: #10B981;
+  --success-light: #D1FAE5;
+  --font: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+  --shadow-lg: 0 10px 25px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.04);
+  --shadow-xl: 0 20px 50px -12px rgba(0,0,0,0.15);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== Reset & Base ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font);
+  color: var(--dark);
+  background: var(--gray-50);
+  line-height: 1.7;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== Scroll Reveal Animation ===== */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== Navigation ===== */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(17, 24, 39, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  transition: var(--transition);
+}
+.nav.scrolled {
+  background: rgba(17, 24, 39, 0.95);
+  box-shadow: 0 4px 30px rgba(0,0,0,0.2);
+}
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--white);
+  text-decoration: none;
+}
+.nav-logo span {
+  color: var(--primary);
+}
+.nav-links {
+  display: flex;
+  gap: 8px;
+  list-style: none;
+}
+.nav-links a {
+  color: var(--gray-400);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+}
+.nav-links a:hover {
+  color: var(--white);
+  background: rgba(255,255,255,0.08);
+}
+.nav-hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  padding: 4px;
+  background: none;
+  border: none;
+}
+.nav-hamburger span {
+  width: 22px;
+  height: 2px;
+  background: var(--white);
+  border-radius: 2px;
+  transition: var(--transition);
+}
+
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 64px;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    background: rgba(17, 24, 39, 0.98);
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .nav-links.open { display: flex; }
+  .nav-links a {
+    padding: 12px 16px;
+    font-size: 15px;
+  }
+  .nav-hamburger { display: flex; }
+}
+
+/* ===== Hero Section ===== */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0F172A 0%, #111827 40%, #064E3B 100%);
+  overflow: hidden;
+  padding: 80px 24px 60px;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle, rgba(16,185,129,0.12) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: heroGlow 8s ease-in-out infinite alternate;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  left: -10%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: heroGlow 10s ease-in-out 2s infinite alternate;
+}
+@keyframes heroGlow {
+  0% { transform: scale(1) translate(0, 0); }
+  100% { transform: scale(1.15) translate(20px, -20px); }
+}
+.hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 800px;
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 20px;
+  border-radius: 100px;
+  margin-bottom: 32px;
+  letter-spacing: 0.02em;
+}
+.hero-badge::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: var(--primary);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+.hero-logo {
+  font-size: 56px;
+  font-weight: 800;
+  color: var(--white);
+  margin-bottom: 16px;
+  letter-spacing: -0.02em;
+}
+.hero-logo .heart {
+  display: inline-block;
+  animation: heartbeat 1.5s ease-in-out infinite;
+  margin-right: 4px;
+}
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  15% { transform: scale(1.15); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.1); }
+}
+.hero-tagline {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 16px;
+  letter-spacing: -0.01em;
+}
+.hero-subtitle {
+  font-size: 18px;
+  color: var(--gray-400);
+  margin-bottom: 48px;
+  line-height: 1.8;
+  font-weight: 300;
+}
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 48px;
+}
+.hero-stat {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius);
+  padding: 20px 12px;
+  transition: var(--transition);
+}
+.hero-stat:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(16,185,129,0.3);
+  transform: translateY(-2px);
+}
+.hero-stat-icon {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+.hero-stat-text {
+  color: var(--gray-300);
+  font-size: 13px;
+  font-weight: 500;
+}
+.hero-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 32px;
+  border-radius: var(--radius);
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: var(--transition);
+  cursor: pointer;
+  border: none;
+  font-family: var(--font);
+}
+.btn-primary {
+  background: var(--primary);
+  color: var(--white);
+  box-shadow: 0 4px 15px rgba(16,185,129,0.3);
+}
+.btn-primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(16,185,129,0.4);
+}
+.btn-secondary {
+  background: rgba(255,255,255,0.08);
+  color: var(--white);
+  border: 1px solid rgba(255,255,255,0.15);
+}
+.btn-secondary:hover {
+  background: rgba(255,255,255,0.15);
+  transform: translateY(-2px);
+}
+.hero-scroll-indicator {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--gray-500);
+  font-size: 12px;
+  animation: scrollBounce 2s ease-in-out infinite;
+}
+@keyframes scrollBounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(8px); }
+}
+.scroll-arrow {
+  width: 24px;
+  height: 24px;
+  border-right: 2px solid var(--gray-500);
+  border-bottom: 2px solid var(--gray-500);
+  transform: rotate(45deg);
+}
+
+@media (max-width: 768px) {
+  .hero { padding: 100px 20px 60px; min-height: auto; }
+  .hero-logo { font-size: 36px; }
+  .hero-tagline { font-size: 20px; }
+  .hero-subtitle { font-size: 15px; margin-bottom: 32px; }
+  .hero-stats { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .hero-stat { padding: 14px 10px; }
+  .hero-stat-icon { font-size: 24px; }
+  .hero-stat-text { font-size: 12px; }
+  .btn { padding: 14px 24px; font-size: 15px; }
+  .hero-scroll-indicator { display: none; }
+}
+
+/* ===== Section Common ===== */
+.section {
+  padding: 100px 24px;
+}
+.section-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+.section-title {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--dark);
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+}
+.section-subtitle {
+  font-size: 16px;
+  color: var(--gray-500);
+  max-width: 500px;
+  margin: 0 auto;
+  line-height: 1.8;
+}
+
+@media (max-width: 768px) {
+  .section { padding: 60px 16px; }
+  .section-title { font-size: 26px; }
+  .section-subtitle { font-size: 14px; }
+}
+
+/* ===== Chat Demo Section ===== */
+#chat-section {
+  background: linear-gradient(180deg, var(--gray-50) 0%, var(--gray-100) 100%);
+}
+.chat-container {
+  max-width: 440px;
+  margin: 0 auto;
+}
+.phone-frame {
+  background: var(--dark);
+  border-radius: 40px;
+  padding: 12px;
+  box-shadow: var(--shadow-xl), 0 0 0 1px rgba(255,255,255,0.05);
+  position: relative;
+}
+.phone-notch {
+  width: 130px;
+  height: 28px;
+  background: var(--dark);
+  border-radius: 0 0 16px 16px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 10;
+}
+.phone-screen {
+  background: var(--gray-100);
+  border-radius: 28px;
+  overflow: hidden;
+  height: 600px;
+  display: flex;
+  flex-direction: column;
+}
+.chat-header {
+  background: var(--primary);
+  color: var(--white);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.chat-header-avatar {
+  width: 40px;
+  height: 40px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+.chat-header-info h3 {
+  font-size: 15px;
+  font-weight: 600;
+}
+.chat-header-info p {
+  font-size: 11px;
+  opacity: 0.85;
+  font-weight: 400;
+}
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  scroll-behavior: smooth;
+}
+.chat-messages::-webkit-scrollbar { width: 4px; }
+.chat-messages::-webkit-scrollbar-track { background: transparent; }
+.chat-messages::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 4px; }
+
+.chat-bubble {
+  max-width: 82%;
+  padding: 10px 14px;
+  border-radius: 18px;
+  font-size: 14px;
+  line-height: 1.6;
+  animation: bubbleIn 0.3s ease;
+  word-break: keep-all;
+}
+@keyframes bubbleIn {
+  from { opacity: 0; transform: translateY(8px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.chat-bubble.ai {
+  background: var(--white);
+  color: var(--dark);
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+  box-shadow: var(--shadow-sm);
+}
+.chat-bubble.user {
+  background: var(--primary);
+  color: var(--white);
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+.chat-bubble .time {
+  font-size: 10px;
+  opacity: 0.55;
+  margin-top: 4px;
+  display: block;
+}
+
+.typing-indicator {
+  display: none;
+  align-self: flex-start;
+  background: var(--white);
+  padding: 12px 18px;
+  border-radius: 18px;
+  border-bottom-left-radius: 4px;
+  box-shadow: var(--shadow-sm);
+}
+.typing-indicator.active { display: flex; }
+.typing-indicator span {
+  width: 7px;
+  height: 7px;
+  background: var(--gray-400);
+  border-radius: 50%;
+  margin: 0 2px;
+  animation: typingDot 1.4s infinite;
+}
+.typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+.typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typingDot {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-6px); opacity: 1; }
+}
+
+.chat-input-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--white);
+  border-top: 1px solid var(--gray-200);
+  flex-shrink: 0;
+}
+.chat-input {
+  flex: 1;
+  border: 1px solid var(--gray-200);
+  border-radius: 24px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-family: var(--font);
+  outline: none;
+  transition: var(--transition);
+  background: var(--gray-50);
+}
+.chat-input:focus {
+  border-color: var(--primary);
+  background: var(--white);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+.chat-input::placeholder { color: var(--gray-400); }
+.chat-send {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--white);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  flex-shrink: 0;
+  font-size: 18px;
+}
+.chat-send:hover { background: var(--primary-dark); transform: scale(1.05); }
+.chat-send:disabled { background: var(--gray-300); cursor: not-allowed; transform: none; }
+
+.chat-hint {
+  text-align: center;
+  margin-top: 20px;
+  color: var(--gray-500);
+  font-size: 13px;
+}
+.chat-hint-examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 12px;
+}
+.chat-hint-chip {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  color: var(--gray-600);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: var(--font);
+}
+.chat-hint-chip:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-light);
+}
+
+@media (max-width: 480px) {
+  .chat-container { max-width: 100%; }
+  .phone-frame { border-radius: 0; padding: 0; box-shadow: none; }
+  .phone-notch { display: none; }
+  .phone-screen { border-radius: 0; height: 70vh; min-height: 500px; }
+}
+
+/* ===== Dashboard Section ===== */
+#dashboard-section {
+  background: var(--white);
+}
+.dashboard-grid {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.dash-card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  transition: var(--transition);
+}
+.dash-card:hover {
+  box-shadow: var(--shadow-lg);
+  border-color: var(--gray-300);
+  transform: translateY(-2px);
+}
+.dash-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.dash-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-600);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.dash-card-badge {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-weight: 600;
+}
+.badge-good { background: var(--success-light); color: var(--primary-dark); }
+.badge-warning { background: var(--warning-light); color: #B45309; }
+.badge-danger { background: var(--danger-light); color: var(--danger); }
+.badge-info { background: var(--info-light); color: var(--info); }
+
+/* Profile card - spans full width */
+.dash-card.profile {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background: linear-gradient(135deg, #ECFDF5 0%, #F0FDF4 50%, #F0FDFA 100%);
+  border-color: rgba(16,185,129,0.15);
+}
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  background: var(--white);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  box-shadow: var(--shadow);
+  flex-shrink: 0;
+  border: 3px solid var(--primary-light);
+}
+.profile-info h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--dark);
+  margin-bottom: 4px;
+}
+.profile-info .profile-meta {
+  font-size: 14px;
+  color: var(--gray-500);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.profile-info .profile-meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.profile-status {
+  margin-left: auto;
+  text-align: right;
+  flex-shrink: 0;
+}
+.profile-status .status-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 6px;
+  animation: pulse 2s infinite;
+}
+.status-normal { background: var(--primary); }
+.status-caution { background: var(--warning); }
+.status-critical { background: var(--danger); }
+
+/* Mood card */
+.mood-display {
+  text-align: center;
+  padding: 12px 0;
+}
+.mood-emoji {
+  font-size: 52px;
+  display: block;
+  margin-bottom: 8px;
+}
+.mood-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--dark);
+}
+.mood-subtext {
+  font-size: 13px;
+  color: var(--gray-500);
+  margin-top: 4px;
+}
+
+/* Steps chart */
+.steps-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 120px;
+  gap: 6px;
+  padding-top: 8px;
+}
+.steps-bar-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+}
+.steps-bar {
+  width: 100%;
+  max-width: 36px;
+  background: linear-gradient(180deg, var(--primary) 0%, #34D399 100%);
+  border-radius: 6px 6px 2px 2px;
+  min-height: 4px;
+  transition: height 1s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+.steps-bar.today {
+  background: linear-gradient(180deg, #059669 0%, var(--primary) 100%);
+  box-shadow: 0 0 10px var(--primary-glow);
+}
+.steps-bar-value {
+  font-size: 9px;
+  color: var(--gray-500);
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+.steps-bar-label {
+  font-size: 10px;
+  color: var(--gray-400);
+  margin-top: 6px;
+}
+.steps-summary {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--gray-100);
+  font-size: 12px;
+  color: var(--gray-500);
+}
+.steps-summary strong {
+  color: var(--dark);
+  font-weight: 600;
+}
+
+/* Sleep card */
+.sleep-display {
+  text-align: center;
+  padding: 8px 0;
+}
+.sleep-hours {
+  font-size: 44px;
+  font-weight: 700;
+  color: var(--dark);
+  line-height: 1;
+}
+.sleep-hours small {
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--gray-500);
+}
+.sleep-bar-bg {
+  height: 10px;
+  background: var(--gray-100);
+  border-radius: 10px;
+  margin: 16px 0;
+  overflow: hidden;
+}
+.sleep-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #818CF8, #6366F1);
+  border-radius: 10px;
+  transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.sleep-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--gray-500);
+}
+
+/* Medication card */
+.med-compliance {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.med-percentage {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--primary);
+}
+.med-bar-bg {
+  flex: 1;
+  height: 8px;
+  background: var(--gray-100);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.med-bar-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 8px;
+  transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.med-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.med-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--gray-50);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+.med-item-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+.med-status {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 100px;
+}
+.med-taken { background: var(--success-light); color: var(--primary-dark); }
+.med-missed { background: var(--danger-light); color: var(--danger); }
+.med-pending { background: var(--gray-100); color: var(--gray-500); }
+
+/* Conversation summary card */
+.convo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.convo-item {
+  padding: 12px;
+  background: var(--gray-50);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--primary);
+}
+.convo-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.convo-date {
+  font-size: 11px;
+  color: var(--gray-400);
+  font-weight: 500;
+}
+.convo-mood-tag {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 100px;
+  font-weight: 600;
+}
+.convo-text {
+  font-size: 13px;
+  color: var(--gray-600);
+  line-height: 1.6;
+}
+
+/* SOS card */
+.sos-card-inner {
+  text-align: center;
+  padding: 8px 0;
+}
+.sos-icon {
+  font-size: 40px;
+  margin-bottom: 8px;
+}
+.sos-status {
+  font-size: 16px;
+  font-weight: 600;
+}
+.sos-detail {
+  font-size: 13px;
+  color: var(--gray-500);
+  margin-top: 8px;
+  padding: 10px;
+  background: var(--gray-50);
+  border-radius: var(--radius-sm);
+}
+
+/* Weekly report card - spans 2 columns */
+.dash-card.report {
+  grid-column: span 2;
+}
+.report-content {
+  font-size: 14px;
+  color: var(--gray-600);
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+.report-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+.report-metric {
+  text-align: center;
+  padding: 12px;
+  background: var(--gray-50);
+  border-radius: var(--radius-sm);
+}
+.report-metric-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--dark);
+}
+.report-metric-label {
+  font-size: 11px;
+  color: var(--gray-500);
+  margin-top: 2px;
+}
+
+/* Dashboard loading */
+.dash-loading {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--gray-500);
+}
+.dash-loading .spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--gray-200);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 900px) {
+  .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+  .dash-card.profile { flex-direction: column; text-align: center; }
+  .profile-status { margin-left: 0; text-align: center; margin-top: 8px; }
+  .dash-card.report { grid-column: 1 / -1; }
+  .report-metrics { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 600px) {
+  .dashboard-grid { grid-template-columns: 1fr; }
+  .dash-card.report { grid-column: 1; }
+  .report-metrics { grid-template-columns: 1fr; }
+  .profile-info .profile-meta { justify-content: center; }
+}
+
+/* ===== Footer ===== */
+.footer {
+  background: var(--dark);
+  color: var(--gray-400);
+  padding: 60px 24px 40px;
+}
+.footer-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+.footer-logo {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 8px;
+}
+.footer-logo span { color: var(--primary); }
+.footer-desc {
+  font-size: 14px;
+  margin-bottom: 24px;
+  color: var(--gray-500);
+}
+.footer-contact {
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+.footer-contact a {
+  color: var(--primary);
+  text-decoration: none;
+}
+.footer-contact a:hover { text-decoration: underline; }
+.footer-stack {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+.footer-stack-badge {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--gray-400);
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.footer-bottom {
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: 24px;
+  font-size: 12px;
+  color: var(--gray-600);
+}
+</style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo"><span class="heart">&#x1F49A;</span> CareLink <span>AI</span></a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#hero">&#xD648;</a></li>
+      <li><a href="#chat-section">AI &#xB9D0;&#xBC97; &#xCCB4;&#xD5D8;</a></li>
+      <li><a href="#dashboard-section">&#xBCF4;&#xD638;&#xC790; &#xB300;&#xC2DC;&#xBCF4;&#xB4DC;</a></li>
+    </ul>
+    <button class="nav-hamburger" id="nav-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero" id="hero">
+  <div class="hero-content">
+    <div class="hero-badge">Investor Demo v1.0</div>
+    <div class="hero-logo"><span class="heart">&#x1F49A;</span> CareLink AI</div>
+    <h1 class="hero-tagline">AI&#xAC00; &#xD568;&#xAED8;&#xD558;&#xB294; &#xB530;&#xB73B;&#xD55C; &#xB178;&#xC778;&#xB3CC;&#xBD04;</h1>
+    <p class="hero-subtitle">&#xC5B4;&#xB974;&#xC2E0;&#xC758; &#xC77C;&#xC0C1;&#xC744; AI&#xAC00; &#xD568;&#xAED8;&#xD558;&#xBA70;, &#xAC00;&#xC871;&#xC5D0;&#xAC8C; &#xC548;&#xC2EC;&#xC744; &#xC804;&#xD569;&#xB2C8;&#xB2E4;</p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-icon">&#x1F4AC;</div>
+        <div class="hero-stat-text">24&#xC2DC;&#xAC04; AI &#xB9D0;&#xBC97;</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-icon">&#x1F4CA;</div>
+        <div class="hero-stat-text">&#xC2E4;&#xC2DC;&#xAC04; &#xAC74;&#xAC15; &#xBAA8;&#xB2C8;&#xD130;&#xB9C1;</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-icon">&#x1F48A;</div>
+        <div class="hero-stat-text">&#xBCF5;&#xC57D; &#xAD00;&#xB9AC;</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-icon">&#x1F6A8;</div>
+        <div class="hero-stat-text">&#xAE34;&#xAE09; SOS</div>
+      </div>
+    </div>
+    <div class="hero-buttons">
+      <a href="#chat-section" class="btn btn-primary">&#x1F4AC; AI &#xB9D0;&#xBC97; &#xCCB4;&#xD5D8;&#xD558;&#xAE30;</a>
+      <a href="#dashboard-section" class="btn btn-secondary">&#x1F4CB; &#xBCF4;&#xD638;&#xC790; &#xB300;&#xC2DC;&#xBCF4;&#xB4DC; &#xBCF4;&#xAE30;</a>
+    </div>
+  </div>
+  <div class="hero-scroll-indicator">
+    <span>&#xC2A4;&#xD06C;&#xB864; &#xB2E4;&#xC6B4;</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- Chat Demo Section -->
+<section class="section" id="chat-section">
+  <div class="section-header reveal">
+    <h2 class="section-title">&#x1F475; AI &#xB9D0;&#xBC97; &#xCCB4;&#xD5D8;</h2>
+    <p class="section-subtitle">&#xC5B4;&#xB974;&#xC2E0;&#xACFC; AI&#xC758; &#xB530;&#xB73B;&#xD55C; &#xB300;&#xD654;&#xB97C; &#xC9C1;&#xC811; &#xCCB4;&#xD5D8;&#xD574;&#xBCF4;&#xC138;&#xC694;</p>
+  </div>
+  <div class="chat-container reveal">
+    <div class="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="chat-header">
+          <div class="chat-header-avatar">&#x1F49A;</div>
+          <div class="chat-header-info">
+            <h3>&#xCF00;&#xC5B4;&#xB9C1;&#xD06C; AI &#xB9D0;&#xBC97;</h3>
+            <p>&#xC628;&#xB77C;&#xC778;</p>
+          </div>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+          <div class="chat-bubble ai">
+            &#xC548;&#xB155;&#xD558;&#xC138;&#xC694;! &#xC800;&#xB294; &#xCF00;&#xC5B4;&#xB9C1;&#xD06C; AI &#xB9D0;&#xBC97;&#xC774;&#xC5D0;&#xC694; &#x1F60A; &#xC624;&#xB298; &#xD558;&#xB8E8;&#xB294; &#xC5B4;&#xB5A0;&#xC168;&#xC5B4;&#xC694;?
+            <span class="time">&#xBC29;&#xAE08;</span>
+          </div>
+          <div class="typing-indicator" id="typing-indicator">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+        <div class="chat-input-bar">
+          <input type="text" class="chat-input" id="chat-input" placeholder="&#xBA54;&#xC2DC;&#xC9C0;&#xB97C; &#xC785;&#xB825;&#xD558;&#xC138;&#xC694;..." maxlength="300">
+          <button class="chat-send" id="chat-send" aria-label="Send">&#x27A4;</button>
+        </div>
+      </div>
+    </div>
+    <div class="chat-hint">
+      &#xC608;&#xC2DC; &#xBA54;&#xC2DC;&#xC9C0;&#xB97C; &#xD074;&#xB9AD;&#xD574;&#xBCF4;&#xC138;&#xC694;
+      <div class="chat-hint-examples">
+        <button class="chat-hint-chip" data-msg="&#xC624;&#xB298; &#xC544;&#xCE68;&#xC5D0; &#xC0B0;&#xCC45;&#xD588;&#xC5B4;&#xC694;">&#x1F6B6; &#xC624;&#xB298; &#xC0B0;&#xCC45;&#xD588;&#xC5B4;&#xC694;</button>
+        <button class="chat-hint-chip" data-msg="&#xC694;&#xC998; &#xBB34;&#xB98E;&#xC774; &#xC880; &#xC544;&#xD30C;&#xC694;">&#x1F9B5; &#xBB34;&#xB98E;&#xC774; &#xC880; &#xC544;&#xD30C;&#xC694;</button>
+        <button class="chat-hint-chip" data-msg="&#xC624;&#xB298; &#xC57D; &#xBA39;&#xC5C8;&#xC5B4;&#xC694;">&#x1F48A; &#xC57D; &#xBA39;&#xC5C8;&#xC5B4;&#xC694;</button>
+        <button class="chat-hint-chip" data-msg="&#xC190;&#xC8FC;&#xAC00; &#xBCF4;&#xACE0; &#xC2F6;&#xC5B4;&#xC694;">&#x1F468;&#x200D;&#x1F469;&#x200D;&#x1F467; &#xC190;&#xC8FC;&#xAC00; &#xBCF4;&#xACE0; &#xC2F6;&#xC5B4;&#xC694;</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Dashboard Section -->
+<section class="section" id="dashboard-section">
+  <div class="section-header reveal">
+    <h2 class="section-title">&#x1F468;&#x200D;&#x1F469;&#x200D;&#x1F467; &#xBCF4;&#xD638;&#xC790; &#xB300;&#xC2DC;&#xBCF4;&#xB4DC;</h2>
+    <p class="section-subtitle">&#xC790;&#xB140;&#xBD84;&#xC774; &#xC2E4;&#xC2DC;&#xAC04;&#xC73C;&#xB85C; &#xD655;&#xC778;&#xD558;&#xB294; &#xC5B4;&#xB974;&#xC2E0; &#xAC74;&#xAC15; &#xD604;&#xD669;</p>
+  </div>
+  <div id="dashboard-content">
+    <div class="dash-loading">
+      <div class="spinner"></div>
+      <p>&#xB300;&#xC2DC;&#xBCF4;&#xB4DC;&#xB97C; &#xBD88;&#xB7EC;&#xC624;&#xB294; &#xC911;...</p>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-logo"><span class="heart">&#x1F49A;</span> CareLink <span>AI</span></div>
+    <p class="footer-desc">CareLink AI MVP Demo</p>
+    <p class="footer-contact">&#xBB38;&#xC758;: <a href="mailto:carelink@example.com">carelink@example.com</a></p>
+    <div class="footer-stack">
+      <span class="footer-stack-badge">Node.js</span>
+      <span class="footer-stack-badge">Claude AI</span>
+      <span class="footer-stack-badge">PostgreSQL</span>
+      <span class="footer-stack-badge">Flutter</span>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2025 CareLink AI. All rights reserved. This is a demo for investor presentation purposes.
+    </div>
+  </div>
+</footer>
+
+<script>
+(function() {
+  'use strict';
+
+  // ===== Navigation =====
+  const nav = document.getElementById('nav');
+  const navToggle = document.getElementById('nav-toggle');
+  const navLinks = document.getElementById('nav-links');
+
+  window.addEventListener('scroll', function() {
+    nav.classList.toggle('scrolled', window.scrollY > 50);
+  });
+
+  navToggle.addEventListener('click', function() {
+    navLinks.classList.toggle('open');
+  });
+
+  // Close mobile nav on link click
+  navLinks.querySelectorAll('a').forEach(function(link) {
+    link.addEventListener('click', function() {
+      navLinks.classList.remove('open');
+    });
+  });
+
+  // ===== Scroll Reveal =====
+  var revealElements = document.querySelectorAll('.reveal');
+  var revealObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  revealElements.forEach(function(el) {
+    revealObserver.observe(el);
+  });
+
+  // ===== Chat Demo =====
+  var chatMessages = document.getElementById('chat-messages');
+  var chatInput = document.getElementById('chat-input');
+  var chatSend = document.getElementById('chat-send');
+  var typingIndicator = document.getElementById('typing-indicator');
+  var isSending = false;
+
+  function getTimeStr() {
+    var now = new Date();
+    var h = now.getHours();
+    var m = now.getMinutes();
+    var ampm = h >= 12 ? '오후' : '오전';
+    h = h % 12 || 12;
+    return ampm + ' ' + h + ':' + (m < 10 ? '0' : '') + m;
+  }
+
+  function addBubble(text, type) {
+    var bubble = document.createElement('div');
+    bubble.className = 'chat-bubble ' + type;
+    bubble.innerHTML = text + '<span class="time">' + getTimeStr() + '</span>';
+    chatMessages.insertBefore(bubble, typingIndicator);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  function showTyping() {
+    typingIndicator.classList.add('active');
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  function hideTyping() {
+    typingIndicator.classList.remove('active');
+  }
+
+  function sendMessage(text) {
+    if (!text.trim() || isSending) return;
+    isSending = true;
+    chatSend.disabled = true;
+
+    addBubble(escapeHtml(text), 'user');
+    chatInput.value = '';
+    showTyping();
+
+    fetch('/api/demo/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text, seniorName: '체험자' })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      hideTyping();
+      var response = data.response || data.message || data.error || '응답을 받지 못했습니다.';
+      addBubble(escapeHtml(response), 'ai');
+    })
+    .catch(function() {
+      hideTyping();
+      addBubble('네트워크 연결을 확인해주세요. 잠시 후 다시 시도해주세요.', 'ai');
+    })
+    .finally(function() {
+      isSending = false;
+      chatSend.disabled = false;
+      chatInput.focus();
+    });
+  }
+
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  chatSend.addEventListener('click', function() {
+    sendMessage(chatInput.value);
+  });
+
+  chatInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage(chatInput.value);
+    }
+  });
+
+  // Hint chips
+  document.querySelectorAll('.chat-hint-chip').forEach(function(chip) {
+    chip.addEventListener('click', function() {
+      var msg = this.getAttribute('data-msg');
+      chatInput.value = msg;
+      sendMessage(msg);
+    });
+  });
+
+  // ===== Dashboard =====
+  var dashboardContent = document.getElementById('dashboard-content');
+
+  // Mock data for demo (used when API is unavailable)
+  var mockDashboard = {
+    senior: { name: '김영순', birthDate: '1948-03-15', profileNote: '서울 강남구 거주, 고혈압/당뇨 관리 중' },
+    status: 'normal',
+    lastActive: '32분 전',
+    today: {
+      steps: 3847,
+      sleepHours: 6.5,
+      medications: [
+        { name: '아스피린 100mg', scheduleTime: '08:00', status: 'TAKEN' },
+        { name: '메트포르민 500mg', scheduleTime: '08:00', status: 'TAKEN' },
+        { name: '암로디핀 5mg', scheduleTime: '20:00', status: 'PENDING' },
+        { name: '메트포르민 500mg', scheduleTime: '18:00', status: 'MISSED' }
+      ],
+      medicationRate: '2/4',
+      conversation: {
+        summary: '오늘 아침 공원에서 산책을 했다고 하셨으며, 기분이 좋아 보이셨습니다. 무릎 통증이 조금 있다고 말씀하셨지만 약을 드시고 나아지셨다고 합니다.',
+        mood: 'GOOD',
+        concerns: [],
+        startedAt: new Date(Date.now() - 32 * 60000).toISOString()
+      }
+    },
+    weekly: {
+      data: [
+        { date: getDateStr(-6), steps: 2100, sleep: 7.0 },
+        { date: getDateStr(-5), steps: 3500, sleep: 6.0 },
+        { date: getDateStr(-4), steps: 4200, sleep: 6.5 },
+        { date: getDateStr(-3), steps: 1800, sleep: 7.5 },
+        { date: getDateStr(-2), steps: 3100, sleep: 5.5 },
+        { date: getDateStr(-1), steps: 4600, sleep: 6.8 },
+        { date: getDateStr(0), steps: 3847, sleep: 6.5 }
+      ],
+      avgSteps: 3307
+    },
+    conversations: [
+      {
+        summary: '오늘 아침 공원에서 산책을 했다고 하셨으며, 기분이 좋아 보이셨습니다.',
+        mood: 'GOOD',
+        startedAt: new Date(Date.now() - 32 * 60000).toISOString()
+      },
+      {
+        summary: '어제 손주와 영상통화를 했다며 매우 기뻐하셨습니다. 식사도 잘 하셨다고 합니다.',
+        mood: 'VERY_GOOD',
+        startedAt: new Date(Date.now() - 24 * 3600000).toISOString()
+      },
+      {
+        summary: '비가 와서 집에 계셨고, 약간 무릎이 쑤신다고 하셨습니다. TV를 보며 쉬셨다고 합니다.',
+        mood: 'NEUTRAL',
+        startedAt: new Date(Date.now() - 48 * 3600000).toISOString()
+      }
+    ],
+    sos: {
+      hasEvent: true,
+      event: {
+        type: 'FALL_DETECTED',
+        resolved: true,
+        createdAt: new Date(Date.now() - 5 * 24 * 3600000).toISOString(),
+        resolvedAt: new Date(Date.now() - 5 * 24 * 3600000 + 300000).toISOString(),
+        note: '화장실에서 미끄러짐 - 본인이 직접 해제, 부상 없음'
+      }
+    },
+    latestReport: {
+      weekStart: getDateStr(-7),
+      overallStatus: 'GOOD',
+      summary: '이번 주 김영순 어르신은 전반적으로 양호한 상태를 유지하셨습니다. 평균 걸음수가 지난주 대비 12% 증가했으며, 정서적으로도 안정된 모습을 보이셨습니다. 복약 이행률이 85%로 양호하나, 저녁 약을 놓치는 경우가 있어 알림 강화를 권장합니다.',
+      avgSteps: 3307,
+      avgSleep: 6.5,
+      medicationRate: 85,
+      concerns: ['저녁 복약 누락 주의', '무릎 통증 지속 관찰 필요']
+    }
+  };
+
+  function getDateStr(daysOffset) {
+    var d = new Date();
+    d.setDate(d.getDate() + daysOffset);
+    return d.toISOString().split('T')[0];
+  }
+
+  function getDayLabel(dateStr) {
+    var days = ['일', '월', '화', '수', '목', '금', '토'];
+    var d = new Date(dateStr + 'T00:00:00');
+    return days[d.getDay()];
+  }
+
+  function formatDate(isoStr) {
+    var d = new Date(isoStr);
+    var month = d.getMonth() + 1;
+    var day = d.getDate();
+    var hours = d.getHours();
+    var mins = d.getMinutes();
+    var ampm = hours >= 12 ? '오후' : '오전';
+    hours = hours % 12 || 12;
+    return month + '/' + day + ' ' + ampm + ' ' + hours + ':' + (mins < 10 ? '0' : '') + mins;
+  }
+
+  function getMoodInfo(mood) {
+    var moods = {
+      'VERY_GOOD': { emoji: '\uD83D\uDE04', text: '매우 좋음', color: '#10B981', bg: '#D1FAE5' },
+      'GOOD': { emoji: '\uD83D\uDE0A', text: '좋음', color: '#059669', bg: '#ECFDF5' },
+      'NEUTRAL': { emoji: '\uD83D\uDE10', text: '보통', color: '#6B7280', bg: '#F3F4F6' },
+      'BAD': { emoji: '\uD83D\uDE1F', text: '안 좋음', color: '#F59E0B', bg: '#FEF3C7' },
+      'VERY_BAD': { emoji: '\uD83D\uDE22', text: '많이 안 좋음', color: '#EF4444', bg: '#FEE2E2' }
+    };
+    return moods[mood] || moods['NEUTRAL'];
+  }
+
+  function getAge(birthDate) {
+    var today = new Date();
+    var birth = new Date(birthDate);
+    var age = today.getFullYear() - birth.getFullYear();
+    var monthDiff = today.getMonth() - birth.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) age--;
+    return age;
+  }
+
+  function getStatusInfo(status) {
+    var statuses = {
+      'normal': { text: '정상', class: 'status-normal', badge: 'badge-good' },
+      'caution': { text: '주의', class: 'status-caution', badge: 'badge-warning' },
+      'warning': { text: '경고', class: 'status-warning', badge: 'badge-warning' },
+      'critical': { text: '위험', class: 'status-critical', badge: 'badge-danger' }
+    };
+    return statuses[status] || statuses['normal'];
+  }
+
+  function renderDashboard(data) {
+    var s = data.senior;
+    var age = s.age || getAge(s.birthDate || '1948-03-15');
+    var statusInfo = getStatusInfo(data.status);
+    var moodInfo = getMoodInfo(data.today.conversation ? data.today.conversation.mood : 'NEUTRAL');
+
+    // Calculate medication compliance
+    var meds = data.today.medications || [];
+    var takenCount = meds.filter(function(m) { return m.status === 'TAKEN'; }).length;
+    var totalMeds = meds.length;
+    var compliancePercent = totalMeds > 0 ? Math.round((takenCount / totalMeds) * 100) : 0;
+
+    // Steps chart
+    var weeklyData = data.weekly.data || [];
+    var maxSteps = Math.max.apply(null, weeklyData.map(function(d) { return d.steps; }).concat([1]));
+
+    var stepsChartHtml = weeklyData.map(function(d, i) {
+      var heightPercent = Math.max((d.steps / maxSteps) * 100, 3);
+      var isToday = i === weeklyData.length - 1;
+      return '<div class="steps-bar-wrapper">' +
+        '<span class="steps-bar-value">' + (d.steps >= 1000 ? (d.steps / 1000).toFixed(1) + 'k' : d.steps) + '</span>' +
+        '<div class="steps-bar' + (isToday ? ' today' : '') + '" style="height:' + heightPercent + '%"></div>' +
+        '<span class="steps-bar-label">' + (d.dayLabel || getDayLabel(d.date)) + '</span>' +
+      '</div>';
+    }).join('');
+
+    // Conversations
+    var convos = data.conversations || [];
+    if (convos.length === 0 && data.today.conversation) {
+      convos = [data.today.conversation];
+    }
+
+    var convoHtml = convos.slice(0, 3).map(function(c) {
+      var cMood = getMoodInfo(c.mood);
+      return '<div class="convo-item">' +
+        '<div class="convo-item-header">' +
+          '<span class="convo-date">' + formatDate(c.startedAt) + '</span>' +
+          '<span class="convo-mood-tag" style="background:' + cMood.bg + ';color:' + cMood.color + '">' + cMood.emoji + ' ' + cMood.text + '</span>' +
+        '</div>' +
+        '<p class="convo-text">' + escapeHtml(c.summary || '') + '</p>' +
+      '</div>';
+    }).join('');
+
+    // Meds list
+    var medListHtml = meds.map(function(m) {
+      var statusClass = m.status === 'TAKEN' ? 'med-taken' : (m.status === 'MISSED' ? 'med-missed' : 'med-pending');
+      var statusText = m.status === 'TAKEN' ? '복용 완료' : (m.status === 'MISSED' ? '미복용' : '예정');
+      var icon = m.status === 'TAKEN' ? '\u2705' : (m.status === 'MISSED' ? '\u274C' : '\u23F0');
+      return '<div class="med-item">' +
+        '<span class="med-item-name">' + icon + ' ' + escapeHtml(m.name) + ' <small style="color:var(--gray-400)">' + m.scheduleTime + '</small></span>' +
+        '<span class="med-status ' + statusClass + '">' + statusText + '</span>' +
+      '</div>';
+    }).join('');
+
+    // SOS
+    var sosData = data.sos || {};
+    var sosHtml = '';
+    if (sosData.hasEvent && sosData.event) {
+      var evt = sosData.event;
+      sosHtml = '<div class="sos-card-inner">' +
+        '<div class="sos-icon">\u2705</div>' +
+        '<div class="sos-status" style="color:var(--primary)">모든 이벤트 해결됨</div>' +
+        '<div class="sos-detail">' +
+          '<strong>최근 이벤트:</strong> ' + formatDate(evt.createdAt) + '<br>' +
+          escapeHtml(evt.note || '낙상 감지 - 해결됨') +
+        '</div>' +
+      '</div>';
+    } else {
+      sosHtml = '<div class="sos-card-inner">' +
+        '<div class="sos-icon">\uD83D\uDEE1\uFE0F</div>' +
+        '<div class="sos-status" style="color:var(--primary)">이상 없음</div>' +
+        '<p style="font-size:13px;color:var(--gray-500);margin-top:8px">긴급 상황이 감지되지 않았습니다</p>' +
+      '</div>';
+    }
+
+    // Sleep
+    var sleepHours = data.today.sleepHours || data.today.sleep || 0;
+    var sleepPercent = Math.min((sleepHours / 9) * 100, 100);
+    var sleepQuality = sleepHours >= 7 ? '양호' : (sleepHours >= 5 ? '보통' : '부족');
+
+    // Report
+    var report = data.latestReport || {};
+    var reportHtml = '';
+    if (report.summary) {
+      reportHtml = '<p class="report-content">' + escapeHtml(report.summary) + '</p>';
+      if (report.concerns && report.concerns.length > 0) {
+        reportHtml += '<div style="margin-top:14px">';
+        report.concerns.forEach(function(c) {
+          reportHtml += '<span style="display:inline-block;background:#FEF3C7;color:#B45309;padding:4px 12px;border-radius:100px;font-size:12px;font-weight:600;margin:4px 4px 0 0">\u26A0\uFE0F ' + escapeHtml(c) + '</span>';
+        });
+        reportHtml += '</div>';
+      }
+      reportHtml += '<div class="report-metrics">' +
+        '<div class="report-metric"><div class="report-metric-value">' + (report.avgSteps || data.weekly.avgSteps || 0).toLocaleString() + '</div><div class="report-metric-label">평균 걸음수</div></div>' +
+        '<div class="report-metric"><div class="report-metric-value">' + (report.avgSleep || sleepHours) + 'h</div><div class="report-metric-label">평균 수면</div></div>' +
+        '<div class="report-metric"><div class="report-metric-value">' + (report.medicationRate || compliancePercent) + '%</div><div class="report-metric-label">복약 이행률</div></div>' +
+      '</div>';
+    } else {
+      reportHtml = '<p style="color:var(--gray-500);text-align:center;padding:20px 0">아직 주간 리포트가 생성되지 않았습니다</p>';
+    }
+
+    // Assemble dashboard
+    dashboardContent.innerHTML =
+      '<div class="dashboard-grid reveal visible">' +
+        // Profile card
+        '<div class="dash-card profile">' +
+          '<div class="profile-avatar">\uD83D\uDC75</div>' +
+          '<div class="profile-info">' +
+            '<h2>' + escapeHtml(s.name) + ' 어르신</h2>' +
+            '<div class="profile-meta">' +
+              '<span>\uD83C\uDF82 ' + age + '세</span>' +
+              '<span>\uD83D\uDCCD 서울 강남구</span>' +
+              '<span>\u23F0 마지막 활동: ' + (data.lastActive || '-') + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="profile-status">' +
+            '<span class="status-dot ' + statusInfo.class + '"></span>' +
+            '<span class="dash-card-badge ' + statusInfo.badge + '">' + statusInfo.text + '</span>' +
+          '</div>' +
+        '</div>' +
+
+        // Mood card
+        '<div class="dash-card">' +
+          '<div class="dash-card-header">' +
+            '<span class="dash-card-title">\uD83D\uDE0A 오늘의 기분</span>' +
+            '<span class="dash-card-badge" style="background:' + moodInfo.bg + ';color:' + moodInfo.color + '">' + moodInfo.text + '</span>' +
+          '</div>' +
+          '<div class="mood-display">' +
+            '<span class="mood-emoji">' + moodInfo.emoji + '</span>' +
+            '<div class="mood-text" style="color:' + moodInfo.color + '">' + moodInfo.text + '</div>' +
+            '<div class="mood-subtext">AI 대화 분석 기반</div>' +
+          '</div>' +
+        '</div>' +
+
+        // Sleep card
+        '<div class="dash-card">' +
+          '<div class="dash-card-header">' +
+            '<span class="dash-card-title">\uD83D\uDCA4 수면 시간</span>' +
+            '<span class="dash-card-badge ' + (sleepHours >= 7 ? 'badge-good' : (sleepHours >= 5 ? 'badge-warning' : 'badge-danger')) + '">' + sleepQuality + '</span>' +
+          '</div>' +
+          '<div class="sleep-display">' +
+            '<div class="sleep-hours">' + sleepHours + '<small>시간</small></div>' +
+            '<div class="sleep-bar-bg"><div class="sleep-bar-fill" style="width:' + sleepPercent + '%"></div></div>' +
+            '<div class="sleep-meta">' +
+              '<span>권장: 7-8시간</span>' +
+              '<span>어젯밤</span>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+
+        // SOS card
+        '<div class="dash-card">' +
+          '<div class="dash-card-header">' +
+            '<span class="dash-card-title">\uD83D\uDEA8 긴급 SOS</span>' +
+            '<span class="dash-card-badge badge-good">안전</span>' +
+          '</div>' +
+          sosHtml +
+        '</div>' +
+
+        // Steps card - spans 2 columns on larger screens
+        '<div class="dash-card" style="grid-column: span 2">' +
+          '<div class="dash-card-header">' +
+            '<span class="dash-card-title">\uD83D\uDEB6 주간 걸음 수</span>' +
+            '<span class="dash-card-badge badge-info">7일</span>' +
+          '</div>' +
+          '<div class="steps-chart">' + stepsChartHtml + '</div>' +
+          '<div class="steps-summary">' +
+            '<span>오늘: <strong>' + (data.today.steps || 0).toLocaleString() + '보</strong></span>' +
+            '<span>주간 평균: <strong>' + (data.weekly.avgSteps || 0).toLocaleString() + '보</strong></span>' +
+          '</div>' +
+        '</div>' +
+
+        // Medication card
+        '<div class="dash-card">' +
+          '<div class="dash-card-header">' +
+            '<span class="dash-card-title">\uD83D\uDC8A 복약 현황</span>' +
+            '<span class="dash-card-badge ' + (compliancePercent >= 80 ? 'badge-good' : 'badge-warning') + '">' + data.today.medicationRate + '</span>' +
+          '</div>' +
+          '<div class="med-compliance">' +
+            '<span class="med-percentage">' + compliancePercent + '%</span>' +
+            '<div class="med-bar-bg"><div class="med-bar-fill" style="width:' + compliancePercent + '%"></div></div>' +
+          '</div>' +
+          '<div class="med-list">' + medListHtml + '</div>' +
+        '</div>' +
+
+        // Conversations card - spans 2 columns
+        '<div class="dash-card" style="grid-column: span 2">' +
+          '<div class="dash-card-header">' +
+            '<span class="dash-card-title">\uD83D\uDCAC 최근 대화 요약</span>' +
+            '<span class="dash-card-badge badge-info">최근 3일</span>' +
+          '</div>' +
+          '<div class="convo-list">' + convoHtml + '</div>' +
+        '</div>' +
+
+        // Weekly report card - spans full width
+        '<div class="dash-card report" style="grid-column: 1 / -1">' +
+          '<div class="dash-card-header">' +
+            '<span class="dash-card-title">\uD83D\uDCCB 주간 리포트</span>' +
+            '<span class="dash-card-badge ' + (report.overallStatus === 'GOOD' ? 'badge-good' : 'badge-warning') + '">' +
+              (report.overallStatus === 'GOOD' ? '양호' : (report.overallStatus === 'CAUTION' ? '주의' : (report.overallStatus || '양호'))) +
+            '</span>' +
+          '</div>' +
+          reportHtml +
+        '</div>' +
+      '</div>';
+
+    // Trigger reveal on new elements
+    var newReveals = dashboardContent.querySelectorAll('.reveal');
+    newReveals.forEach(function(el) { revealObserver.observe(el); });
+  }
+
+  // Normalize API response to match our render format
+  function normalizeApiData(raw) {
+    // If the data already matches mock format, return as-is
+    if (raw.today && raw.today.medications) return raw;
+
+    // Convert from actual /api/demo/dashboard format
+    var s = raw.senior || {};
+    var weeklyData = (raw.weekly && raw.weekly.data) || [];
+    var todayData = weeklyData.length > 0 ? weeklyData[weeklyData.length - 1] : {};
+    var meds = (raw.medications || []).map(function(m) {
+      return { name: m.name, scheduleTime: m.time || m.scheduleTime || '', status: m.status || 'PENDING' };
+    });
+    var takenCount = meds.filter(function(m) { return m.status === 'TAKEN'; }).length;
+    var convos = (raw.recentConversations || []).map(function(c) {
+      return {
+        summary: c.summary,
+        mood: c.mood || 'NEUTRAL',
+        concerns: c.concerns || [],
+        startedAt: c.date === '오늘' ? new Date().toISOString() :
+                   c.date === '어제' ? new Date(Date.now() - 86400000).toISOString() :
+                   new Date(Date.now() - 2 * 86400000).toISOString()
+      };
+    });
+    var sosEvents = raw.sosEvents || [];
+    var hasSos = sosEvents.length > 0;
+    var sosEvt = hasSos ? sosEvents[0] : null;
+
+    // Build weekly report object
+    var reportObj = null;
+    if (raw.weeklyReport) {
+      reportObj = {
+        weekStart: getDateStr(-7),
+        overallStatus: 'GOOD',
+        summary: raw.weeklyReport,
+        avgSteps: (raw.weekly && raw.weekly.avgSteps) || 0,
+        avgSleep: (raw.weekly && raw.weekly.avgSleep) || 0,
+        medicationRate: raw.medicationCompliance ? Math.round(raw.medicationCompliance * 100) : 0,
+        concerns: []
+      };
+    }
+
+    return {
+      senior: { name: s.name, birthDate: s.birthDate || ('1948-03-15'), profileNote: s.profileNote || '' },
+      status: 'normal',
+      lastActive: raw.lastActive || '-',
+      today: {
+        steps: todayData.steps || 0,
+        sleepHours: todayData.sleepHours || todayData.sleep || 0,
+        medications: meds,
+        medicationRate: takenCount + '/' + meds.length,
+        conversation: convos.length > 0 ? convos[0] : null
+      },
+      weekly: raw.weekly || { data: weeklyData, avgSteps: 0 },
+      conversations: convos,
+      sos: {
+        hasEvent: hasSos,
+        event: sosEvt ? {
+          type: sosEvt.type || 'SOS',
+          resolved: sosEvt.resolved !== false,
+          createdAt: new Date(Date.now() - 3 * 86400000).toISOString(),
+          note: (sosEvt.type || 'SOS') + ' - ' + (sosEvt.resolvedBy || '해결됨')
+        } : null
+      },
+      latestReport: reportObj
+    };
+  }
+
+  // Try to fetch from API, fall back to mock data
+  function loadDashboard() {
+    fetch('/api/demo/dashboard')
+      .then(function(res) {
+        if (!res.ok) throw new Error('API unavailable');
+        return res.json();
+      })
+      .then(function(data) {
+        renderDashboard(normalizeApiData(data));
+      })
+      .catch(function() {
+        // Use mock data for demo purposes
+        renderDashboard(mockDashboard);
+      });
+  }
+
+  // Load dashboard when section is in view (or immediately if already visible)
+  var dashLoaded = false;
+  var dashSection = document.getElementById('dashboard-section');
+  var dashObserver = new IntersectionObserver(function(entries) {
+    if (entries[0].isIntersecting && !dashLoaded) {
+      dashLoaded = true;
+      // Small delay for visual effect
+      setTimeout(loadDashboard, 400);
+    }
+  }, { threshold: 0.05 });
+  dashObserver.observe(dashSection);
+
+  // Also load on direct navigation
+  if (window.location.hash === '#dashboard-section') {
+    dashLoaded = true;
+    setTimeout(loadDashboard, 200);
+  }
+
+})();
+</script>
+</body>
+</html>

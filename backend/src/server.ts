@@ -15,6 +15,8 @@ import { sosRouter } from './routes/sos';
 import { reportRouter } from './routes/report';
 import { notificationRouter } from './routes/notification';
 import { dashboardRouter } from './routes/dashboard';
+import { demoRouter } from './routes/demo';
+import path from 'path';
 
 dotenv.config();
 
@@ -23,7 +25,18 @@ const prisma = new PrismaClient();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'"],
+    },
+  },
+}));
 app.use(cors({ origin: process.env.CORS_ORIGIN || '*', credentials: true }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
@@ -54,6 +67,10 @@ app.use('/api/sos', sosRouter);
 app.use('/api/reports', reportRouter);
 app.use('/api/notifications', notificationRouter);
 app.use('/api/dashboard', dashboardRouter);
+app.use('/api/demo', demoRouter);
+
+// Serve static demo page
+app.use(express.static(path.join(__dirname, '../public')));
 
 // Error handling
 app.use(errorHandler);
