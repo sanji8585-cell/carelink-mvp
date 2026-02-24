@@ -5,7 +5,7 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc",
+    "build": "esbuild src/server.ts --bundle --platform=node --outdir=dist --format=cjs --packages=external --sourcemap",
     "start": "node dist/server.js",
     "seed": "tsx scripts/seed.ts",
     "lint": "eslint src/",
