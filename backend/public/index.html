@@ -1434,6 +1434,206 @@ body {
   .senior-app-screen { border-radius: 0; height: 70vh; min-height: 500px; }
 }
 
+/* ===== Care Report Section ===== */
+.care-report {
+  max-width: 700px;
+  margin: 0 auto;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+.care-header {
+  background: linear-gradient(135deg, #065f46, #059669);
+  color: var(--white);
+  padding: 24px 28px;
+}
+.care-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.care-header-badge {
+  background: rgba(255,255,255,0.2);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.care-header h3 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.care-header-meta {
+  font-size: 13px;
+  opacity: 0.9;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.care-body { padding: 24px 28px; display: flex; flex-direction: column; gap: 24px; }
+
+.care-section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--dark);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Checklist grid */
+.care-checklist {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+.care-check-item {
+  background: var(--gray-50);
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 14px 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.care-check-item:hover { border-color: var(--primary); }
+.care-check-item.checked {
+  background: var(--primary-light);
+  border-color: var(--primary);
+}
+.care-check-icon { font-size: 24px; margin-bottom: 6px; }
+.care-check-label { font-size: 13px; font-weight: 600; color: var(--dark); }
+.care-check-detail { font-size: 11px; color: var(--gray-500); margin-top: 4px; line-height: 1.4; }
+.care-check-item.checked .care-check-detail { color: var(--primary-dark); }
+.care-check-status {
+  margin-top: 6px;
+  font-size: 18px;
+}
+
+/* Condition selector */
+.care-condition-btns {
+  display: flex;
+  gap: 10px;
+}
+.care-cond-btn {
+  flex: 1;
+  padding: 12px;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius);
+  background: var(--white);
+  cursor: pointer;
+  text-align: center;
+  transition: var(--transition);
+  font-family: var(--font);
+}
+.care-cond-btn:hover { border-color: var(--gray-400); }
+.care-cond-btn .cond-emoji { font-size: 24px; display: block; margin-bottom: 4px; }
+.care-cond-btn .cond-text { font-size: 13px; font-weight: 600; color: var(--dark); }
+.care-cond-btn.selected-good { border-color: var(--success); background: #ecfdf5; }
+.care-cond-btn.selected-normal { border-color: var(--warning); background: #fffbeb; }
+.care-cond-btn.selected-bad { border-color: var(--danger); background: #fef2f2; }
+
+/* Vitals */
+.care-vitals-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.care-vital-item {
+  text-align: center;
+  padding: 14px 8px;
+  background: var(--gray-50);
+  border-radius: var(--radius);
+}
+.care-vital-icon { font-size: 20px; margin-bottom: 4px; }
+.care-vital-value { font-size: 20px; font-weight: 700; color: var(--dark); }
+.care-vital-label { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+.care-vital-unit { font-size: 12px; color: var(--gray-400); font-weight: 400; }
+
+/* Memo */
+.care-memo-text {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--dark);
+  font-style: italic;
+  min-height: 60px;
+}
+
+/* AI Comment */
+.care-ai-box {
+  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+  border: 1px solid var(--primary);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+.care-ai-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin-bottom: 8px;
+}
+.care-ai-text {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #065f46;
+}
+
+/* 7-day History Timeline */
+.care-history-row {
+  display: flex;
+  gap: 6px;
+  justify-content: space-between;
+}
+.care-history-day {
+  flex: 1;
+  text-align: center;
+  cursor: pointer;
+  padding: 8px 4px;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+}
+.care-history-day:hover { background: var(--gray-100); }
+.care-history-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  margin: 0 auto 4px;
+}
+.care-history-dot.normal { background: var(--success); }
+.care-history-dot.caution { background: var(--warning); }
+.care-history-dot.warning { background: var(--danger); }
+.care-history-date { font-size: 11px; color: var(--gray-500); }
+.care-history-day.today .care-history-date { color: var(--primary); font-weight: 700; }
+.care-history-tooltip {
+  font-size: 11px;
+  color: var(--gray-600);
+  margin-top: 3px;
+  display: none;
+}
+.care-history-day.active .care-history-tooltip { display: block; }
+.care-history-day.active { background: var(--gray-100); }
+
+/* Responsive */
+@media (max-width: 600px) {
+  .care-body { padding: 16px; gap: 18px; }
+  .care-header { padding: 18px 16px; }
+  .care-checklist { grid-template-columns: repeat(2, 1fr); }
+  .care-vitals-grid { grid-template-columns: repeat(3, 1fr); }
+  .care-condition-btns { flex-direction: row; }
+  .care-header-meta { flex-direction: column; gap: 4px; }
+}
+
 /* ===== Footer ===== */
 .footer {
   background: var(--dark);
@@ -1500,6 +1700,7 @@ body {
       <li><a href="#hero">&#xD648;</a></li>
       <li><a href="#chat-section">AI &#xB9D0;&#xBC97; &#xCCB4;&#xD5D8;</a></li>
       <li><a href="#senior-app-section">&#xC5B4;&#xB974;&#xC2E0; &#xC571;</a></li>
+      <li><a href="#care-report-section">&#xB3CC;&#xBD04; &#xB9AC;&#xD3EC;&#xD2B8;</a></li>
       <li><a href="#dashboard-section">&#xBCF4;&#xD638;&#xC790; &#xB300;&#xC2DC;&#xBCF4;&#xB4DC;</a></li>
     </ul>
     <button class="nav-hamburger" id="nav-toggle" aria-label="Menu">
@@ -1612,6 +1813,22 @@ body {
             <p>&#xB85C;&#xB529; &#xC911;...</p>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Care Report Section -->
+<section class="section" id="care-report-section">
+  <div class="section-header reveal">
+    <h2 class="section-title">&#x1F4CB; &#xC694;&#xC591;&#xBCF4;&#xD638;&#xC0AC; &#xB370;&#xC77C;&#xB9AC; &#xB3CC;&#xBD04; &#xB9AC;&#xD3EC;&#xD2B8;</h2>
+    <p class="section-subtitle">&#xC694;&#xC591;&#xBCF4;&#xD638;&#xC0AC;&#xAC00; &#xB9E4;&#xC77C; &#xC791;&#xC131;&#xD558;&#xB294; &#xC5B4;&#xB974;&#xC2E0; &#xB3CC;&#xBD04; &#xAE30;&#xB85D;</p>
+  </div>
+  <div class="reveal" id="care-report-wrapper">
+    <div class="care-report" id="care-report-content">
+      <div class="dash-loading">
+        <div class="spinner"></div>
+        <p>&#xB3CC;&#xBD04; &#xB9AC;&#xD3EC;&#xD2B8; &#xB85C;&#xB529; &#xC911;...</p>
       </div>
     </div>
   </div>
@@ -2281,6 +2498,175 @@ body {
     });
   }, { threshold: 0.1 });
   if (seniorAppSection) seniorAppObserver.observe(seniorAppSection);
+
+  // ===== Care Report =====
+  var careReportContent = document.getElementById('care-report-content');
+
+  function renderCareReport() {
+    var now = new Date();
+    var days = ['일','월','화','수','목','금','토'];
+    var dateStr = now.getFullYear() + '년 ' + (now.getMonth()+1) + '월 ' + now.getDate() + '일 (' + days[now.getDay()] + ')';
+
+    var checklist = [
+      { icon: '🍚', label: '식사', detail: '아침 ✓ · 점심 ✓', checked: true },
+      { icon: '💊', label: '복약', detail: '아침 ✓ · 저녁 ⏰', checked: true },
+      { icon: '🚶', label: '운동', detail: '공원 산책 30분', checked: true },
+      { icon: '🛁', label: '위생', detail: '세면 · 구강관리', checked: true }
+    ];
+
+    var vitals = [
+      { icon: '❤️', label: '혈압', value: '128/82', unit: 'mmHg' },
+      { icon: '🌡️', label: '체온', value: '36.5', unit: '°C' },
+      { icon: '💓', label: '맥박', value: '72', unit: 'bpm' }
+    ];
+
+    var history = [
+      { date: getDateStr(-6), status: 'normal', note: '상태 양호' },
+      { date: getDateStr(-5), status: 'normal', note: '산책 40분' },
+      { date: getDateStr(-4), status: 'caution', note: '무릎 통증 호소' },
+      { date: getDateStr(-3), status: 'normal', note: '컨디션 회복' },
+      { date: getDateStr(-2), status: 'normal', note: '식사 잘 하심' },
+      { date: getDateStr(-1), status: 'normal', note: '기분 좋으심' },
+      { date: getDateStr(0), status: 'normal', note: '오늘 방문' }
+    ];
+
+    var html = '';
+
+    // Header
+    html += '<div class="care-header">';
+    html += '<div class="care-header-top">';
+    html += '<h3>📋 데일리 돌봄 리포트</h3>';
+    html += '<span class="care-header-badge">✅ 작성완료</span>';
+    html += '</div>';
+    html += '<div class="care-header-meta">';
+    html += '<span>📅 ' + dateStr + '</span>';
+    html += '<span>👩‍⚕️ 요양보호사 박미영</span>';
+    html += '<span>👴 어르신 김영순 (78세)</span>';
+    html += '</div>';
+    html += '</div>';
+
+    html += '<div class="care-body">';
+
+    // Checklist
+    html += '<div>';
+    html += '<div class="care-section-title">✅ 돌봄 체크리스트</div>';
+    html += '<div class="care-checklist">';
+    checklist.forEach(function(c, i) {
+      html += '<div class="care-check-item' + (c.checked ? ' checked' : '') + '" data-care-idx="' + i + '">';
+      html += '<div class="care-check-icon">' + c.icon + '</div>';
+      html += '<div class="care-check-label">' + c.label + '</div>';
+      html += '<div class="care-check-detail">' + c.detail + '</div>';
+      html += '<div class="care-check-status">' + (c.checked ? '✅' : '⬜') + '</div>';
+      html += '</div>';
+    });
+    html += '</div></div>';
+
+    // Condition
+    html += '<div>';
+    html += '<div class="care-section-title">😊 오늘의 컨디션</div>';
+    html += '<div class="care-condition-btns">';
+    html += '<button class="care-cond-btn selected-good" data-cond="good"><span class="cond-emoji">😊</span><span class="cond-text">좋음</span></button>';
+    html += '<button class="care-cond-btn" data-cond="normal"><span class="cond-emoji">😐</span><span class="cond-text">보통</span></button>';
+    html += '<button class="care-cond-btn" data-cond="bad"><span class="cond-emoji">😞</span><span class="cond-text">안좋음</span></button>';
+    html += '</div></div>';
+
+    // Vitals
+    html += '<div>';
+    html += '<div class="care-section-title">🩺 바이탈 사인</div>';
+    html += '<div class="care-vitals-grid">';
+    vitals.forEach(function(v) {
+      html += '<div class="care-vital-item">';
+      html += '<div class="care-vital-icon">' + v.icon + '</div>';
+      html += '<div class="care-vital-value">' + v.value + ' <span class="care-vital-unit">' + v.unit + '</span></div>';
+      html += '<div class="care-vital-label">' + v.label + '</div>';
+      html += '</div>';
+    });
+    html += '</div></div>';
+
+    // Memo
+    html += '<div>';
+    html += '<div class="care-section-title">📝 특이사항 메모</div>';
+    html += '<div class="care-memo-text">"오전 공원 산책 시 무릎 통증을 약간 호소하셨으나, 산책 후에는 나아지셨습니다. 점심 식사를 맛있게 드셨고, 오후에는 TV 시청하시며 편안히 쉬셨습니다. 전반적으로 기분이 좋아 보이셨습니다."</div>';
+    html += '</div>';
+
+    // AI Comment
+    html += '<div>';
+    html += '<div class="care-section-title">🤖 AI 돌봄 코멘트</div>';
+    html += '<div class="care-ai-box">';
+    html += '<div class="care-ai-label">💚 CareLink AI 분석</div>';
+    html += '<div class="care-ai-text">최근 3일간 걸음 수가 꾸준히 증가하고 있어 긍정적입니다. 수면 패턴도 안정적이며 식사량도 양호합니다. 다만 무릎 통증이 이번 주 2회 반복되고 있어, <strong>다음 정기 진료 시 정형외과 상담을 권장</strong>합니다. 현재 복약 순응도는 85%로 양호한 편이나, 저녁 약 복용을 잊는 경향이 있어 알림 설정을 권장드립니다.</div>';
+    html += '</div></div>';
+
+    // 7-day History
+    html += '<div>';
+    html += '<div class="care-section-title">📊 최근 7일 돌봄 히스토리</div>';
+    html += '<div class="care-history-row">';
+    history.forEach(function(h, i) {
+      var d = new Date(h.date);
+      var dayLabel = (d.getMonth()+1) + '/' + d.getDate();
+      var isToday = i === history.length - 1;
+      html += '<div class="care-history-day' + (isToday ? ' today' : '') + '" data-history-idx="' + i + '">';
+      html += '<div class="care-history-dot ' + h.status + '"></div>';
+      html += '<div class="care-history-date">' + dayLabel + '</div>';
+      html += '<div class="care-history-tooltip">' + h.note + '</div>';
+      html += '</div>';
+    });
+    html += '</div></div>';
+
+    html += '</div>'; // close care-body
+
+    careReportContent.innerHTML = html;
+
+    // Event: checklist toggle
+    careReportContent.querySelectorAll('.care-check-item').forEach(function(item) {
+      item.addEventListener('click', function() {
+        var status = this.querySelector('.care-check-status');
+        if (this.classList.contains('checked')) {
+          this.classList.remove('checked');
+          status.textContent = '⬜';
+        } else {
+          this.classList.add('checked');
+          status.textContent = '✅';
+        }
+      });
+    });
+
+    // Event: condition selector
+    careReportContent.querySelectorAll('.care-cond-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        careReportContent.querySelectorAll('.care-cond-btn').forEach(function(b) {
+          b.className = 'care-cond-btn';
+        });
+        var cond = this.getAttribute('data-cond');
+        var cls = cond === 'good' ? 'selected-good' : cond === 'bad' ? 'selected-bad' : 'selected-normal';
+        this.classList.add(cls);
+      });
+    });
+
+    // Event: history day click
+    careReportContent.querySelectorAll('.care-history-day').forEach(function(day) {
+      day.addEventListener('click', function() {
+        var wasActive = this.classList.contains('active');
+        careReportContent.querySelectorAll('.care-history-day').forEach(function(d) {
+          d.classList.remove('active');
+        });
+        if (!wasActive) this.classList.add('active');
+      });
+    });
+  }
+
+  // Load care report on scroll
+  var careReportLoaded = false;
+  var careReportSection = document.getElementById('care-report-section');
+  var careReportObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting && !careReportLoaded) {
+        careReportLoaded = true;
+        renderCareReport();
+      }
+    });
+  }, { threshold: 0.1 });
+  if (careReportSection) careReportObserver.observe(careReportSection);
 
   // ===== Dashboard =====
   var dashboardContent = document.getElementById('dashboard-content');
